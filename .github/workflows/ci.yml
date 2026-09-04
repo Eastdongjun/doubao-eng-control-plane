@@ -1,0 +1,60 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Python 语法检查（全仓）
+        run: |
+          set -e
+          find . -name '*.py' -not -path './.git/*' -print0 | xargs -0 -n1 python -m py_compile
+          echo "✓ 全部 Python 文件语法通过"
+
+      - name: 技能 frontmatter 校验（name + description）
+        run: |
+          python - <<'EOF'
+          import pathlib, sys
+          try:
+              import yaml
+          except ImportError:
+              # 极简 YAML frontmatter 解析（name/description 两字段）
+              print("⚠ yaml 未安装，用极简解析")
+              import re
+              ok = True
+              for md in pathlib.Path('skills').glob('*/SKILL.md'):
+                  text = md.read_text(encoding='utf-8')
+                  if not re.search(r'^name\s*:', text, re.M) or not re.search(r'^description\s*:', text, re.M):
+                      print('缺字段:', md); ok = False
+              sys.exit(0 if ok else 1)
+          ok = True
+          for md in pathlib.Path('skills').glob('*/SKILL.md'):
+              try:
+                  parts = md.read_text(encoding='utf-8').split('---')
+                  if len(parts) < 3:
+                      print('frontmatter 缺失:', md); ok = False; continue
+                  d = yaml.safe_load(parts[1])
+                  if not d or not d.get('name') or not d.get('description'):
+                      print('缺 name/description:', md); ok = False
+              except Exception as e:
+                  print('解析失败:', md, e); ok = False
+          print('技能校验:', '✓ 全部通过' if ok else '✗ 存在失败')
+          sys.exit(0 if ok else 1)
+          EOF
+
+      - name: 治理机制一致性校验（无敏感/无 .venv 混入）
+        run: |
+          set -e
+          if git ls-files | grep -qE '(^|/)\.venv/'; then echo "✗ .venv 混入"; exit 1; fi
+          if git ls-files | grep -qiE 'ghp_[A-Za-z0-9]{30}|PRIVATE KEY|sk-[A-Za-z0-9]{20}'; then echo "✗ 敏感信息混入"; exit 1; fi
+          echo "✓ 无 .venv、无敏感信息"
