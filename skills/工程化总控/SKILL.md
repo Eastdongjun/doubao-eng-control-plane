@@ -81,3 +81,11 @@ description: 软件项目工程化总控（编排层）。当用户提出新的�
 - **阶段 9 上线准备**：运行 `python3 governance-demo/backup_restore_drill.py`，完成 备份 → 模拟丢失/篡改 → 全量恢复 → md5 校验 四步演练；未通过则不得上线。
 - 演练只操作 `backups/` 与 `_drill/` 区，不触碰真实源文件，可放心执行。
 
+### 7. 工程化运营指标监控（L4 可运营）
+- 运行 `python3 monitor/eng_metrics.py` 采集六类运营指标：技能库健康、注册中心一致、项目运营（各项目阶段产物数 + 追踪矩阵覆盖率）、治理健康（trace 行数/回滚演练）、CI 状态、资产完整性；异常项自动告警。
+- 每次结果追加到 `.governance/eng-metrics-history.jsonl` 形成趋势；可按需挂 cron/launchd 定期采集。
+
+### 8. 质量门禁评测（阶段 8/10 强制放行闸门）
+- **阶段 8（测试）与阶段 10（发布）前**：运行 `python3 governance-demo/eval_gate.py --project <项目目录名>`，通过六项硬门禁（引用零断裂 / py 语法全通过 / 注册表一致 / 追踪矩阵覆盖率 100% / 回滚演练就绪 / CI 最近成功）才允许放行。
+- 每次结果追加 `.governance/eval-gate-history.jsonl`（带时间戳），形成持续评测闭环；门禁 FAIL 时回到对应阶段补齐。
+
