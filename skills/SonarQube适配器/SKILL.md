@@ -89,7 +89,7 @@ CLI:  python3 governance-demo/engineering.py improve <项目根>
 
 ## 第 6 层：修复手册（常见规则 → adapter 指南）
 
-> 完整版见 `governance-demo/sonar-rules.md`；`engineering improve` 的 diagnostics 已内联 adapter 字段。
+> 完整版见 `governance-demo/sonar-rules.md`；**固定工程套路**见 `governance-demo/sonar-fix-templates.md`（S3776 五步拆法 / S1192 四步提常量 等）；`engineering improve` 的 diagnostics 已内联 adapter 字段。
 
 | 规则 | 问题 | 修法 | 示例 |
 |---|---|---|---|
@@ -102,6 +102,40 @@ CLI:  python3 governance-demo/engineering.py improve <项目根>
 | **S3358** | 嵌套三元 | 拆 if/elif 或局部变量 | `a ? b : (c ? d : e)` → `if a: r=b elif c: r=d else: r=e` |
 | **S107** | 参数 > 7 个 | 封装参数对象 / 拆职责 | `f(a,b,c,d,e,f,g,h)` → `f(OrderQuery(a,b,c,d,e,f,g,h))` |
 | **S1128** | 未使用 import | 删除 | `import os`（未用）→ 移除 |
+| **S9998** | NOSONAR 滥用 | 移除，改用豁免文件 | `// NOSONAR` → 删除 + 写 `exemptions.json` 带 reason |
+
+## 完整工作流（诊断队列 → 最小修复 → 复查归零 → 证据交付）
+
+AI 每次修 Sonar 问题必须按此顺序走，**不能跳步、不能挑简单的刷数量**：
+
+```
+1. engineering snapshot <root>     记录基线（修复前 problems 数）
+2. engineering queue <root>        看 P0-P4 优先级队列 + 分批计划
+3. engineering sonar-plan <root> <file>  看目标文件雷区 + 角色预算
+4. 写代码（MCP 写后即检）           按队列优先级修，先 P0 再 P1...
+5. engineering diff <root>         新增诊断门禁：新增>0 必须修复或回滚
+6. engineering impact <root>       改动影响面：方法签名/返回值/常量/时间
+7. engineering report <root>       AI 自检报告（修复前后/新增/编译/NOSONAR/文件）
+8. git commit                      hook 自动阻断（Error/Warning/Gate离线）
+```
+
+**分阶段交付规则**（不能一口气修 95 个）：
+- 第一批：所有 P0（Java Error / 编译错误）
+- 第二批：当前打开文件的所有问题
+- 第三批：P1/P2 高风险（时区/null 集合/复杂度）
+- 第四批：P3 低风险风格（重复字符串/未用 import）
+- 每批都要：写入 → diff 对比 → compile/test → evidence
+
+**Stale Diagnostic 识别**：VSCode 报 Java Error 但 Maven 编译过了 → 跑 `engineering verify-stale <root> <file>`，自动 mvn compile 验证，标记 suspected_stale 并提示刷新 Language Server。
+
+**文件级质量预算**（AI 写代码前先知道文件角色）：
+- Controller：复杂度<=8，不允许复杂业务逻辑
+- Service：复杂度<=15，必须显式时区
+- Mapper：不允许拼接 SQL 风险
+- DTO：不允许业务计算
+- Task/Schedule：必须显式时区、必须幂等
+
+**禁止 NOSONAR 滥用**：默认禁止新增 `// NOSONAR` / `// noinspection`。允许条件：Sonar 明确误报 + 有业务原因 + 注释说明 + 单独记录到 evidence。否则 S9998 会报。
 
 ## 与既有技能配合
 

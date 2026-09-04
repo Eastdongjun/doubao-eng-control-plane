@@ -15,7 +15,7 @@
 豁免: <root>/.ai/evidence/exemptions.json  → [{"rule":"S1172","file":"src/X.java","line":12,"reason":"接口签名必须保留"}]
 状态: <root>/.ai/evidence/improve-state.json → diagnostics 列表 + status(NEEDS_WORK/PASS)
 """
-import argparse, ast, json, pathlib, re, subprocess, sys
+import argparse, ast, datetime, json, pathlib, re, subprocess, sys
 
 SEV_ERROR, SEV_WARNING = "ERROR", "WARNING"
 DEFAULT_COMPLEXITY = 15
@@ -108,6 +108,13 @@ class PyChecker:
         self._scan_nested_ternary(tree, f)
         self._scan_too_many_params(tree, f)
         self._scan_unused_imports(tree, f)
+        self._scan_nosonar(code, f)
+    def _scan_nosonar(self, code, f):
+        # 禁止新增 NOSONAR/noinspection 逃避（S9998）；只匹配行尾真正的抑制注释（// NOSONAR 或 // NOSONAR java:S1234）
+        # 代码注释里提到"NOSONAR 统计/检测"等不算逃避
+        for m in re.finditer(r"(?://|#)\s*(?:NOSONAR|noinspection)(?:\s+[-\w:.]+)?\s*$", code, re.MULTILINE):
+            self._add("S9998", SEV_WARNING, f"禁止使用 NOSONAR 逃避问题；确需豁免请写 exemptions.json + reason。",
+                      f, code[:m.start()].count("\n") + 1, "移除 NOSONAR，改用 exemptions.json 带 reason 豁免。")
     def _add(self, rule, sev, msg, f, line, sug=""):
         if not is_exempt(self.exemptions, rule, f, line):
             self.problems.append(Problem(rule, sev, msg, f, line, sug))
@@ -241,6 +248,11 @@ class TextChecker:
             r = subprocess.run(["node", "--check", str(path)], capture_output=True, text=True)
             if r.returncode != 0:
                 self._add("S9999", SEV_ERROR, f"语法错误: {r.stderr.strip()[:120]}", f, 0, "修复语法错误")
+        self._nosonar(code, f)
+    def _nosonar(self, code, f):
+        for m in re.finditer(r"(?://|#)\s*(?:NOSONAR|noinspection)(?:\s+[-\w:.]+)?\s*$", code, re.MULTILINE):
+            self._add("S9998", SEV_WARNING, f"禁止使用 NOSONAR 逃避问题；确需豁免请写 exemptions.json + reason。",
+                      f, code[:m.start()].count("\n") + 1, "移除 NOSONAR，改用 exemptions.json 带 reason 豁免。")
     def _add(self, rule, sev, msg, f, line, sug=""):
         if not is_exempt(self.exemptions, rule, f, line):
             self.problems.append(Problem(rule, sev, msg, f, line, sug))
@@ -428,8 +440,11 @@ def cmd_sonar_plan(args):
     problems = run_checks(root)
     mine = [p for p in problems if str((root / p.file).resolve()) == str(target_abs)]
     lang = target_abs.suffix.lstrip(".")
+    budget = file_budget(str(rel))
     c = count_by_sev(mine)
     print(f"📍 Sonar 写前预检 · {rel}")
+    print(f"  文件角色: {budget['role']} | 复杂度预算: <= {budget['max_complexity']}")
+    print(f"  角色约束: {' / '.join(budget['rules'])}")
     print(f"  当前文件已有问题: {len(mine)} 个 (ERROR={c['ERROR']}, WARNING={c['WARNING']})")
     if not mine:
         print("  ✓ 该文件当前 0 problems")
@@ -544,6 +559,290 @@ exit 0
     print(f"✓ pre-commit hook 已安装: {hook}")
     return 0
 
+# ==================== 层 8-15：新增诊断门禁 / 队列 / 影响面 / 报告 ====================
+
+# 文件级质量预算（层 9）：按路径角色识别，不同文件不同阈值
+FILE_BUDGETS = {
+    "controller": {"role": "Controller", "max_complexity": 8, "rules": ["不允许复杂业务逻辑", "只做参数校验+转发+响应组装"]},
+    "service": {"role": "Service", "max_complexity": 15, "rules": ["业务逻辑在此", "方法复杂度<=15", "必须显式时区"]},
+    "mapper": {"role": "Mapper", "max_complexity": 10, "rules": ["不允许拼接 SQL 风险", "只做数据访问"]},
+    "dto": {"role": "DTO", "max_complexity": 3, "rules": ["不允许业务计算", "纯数据载体"]},
+    "schedule": {"role": "Task/Schedule", "max_complexity": 12, "rules": ["必须显式时区", "定时任务必须幂等"]},
+    "task": {"role": "Task/Schedule", "max_complexity": 12, "rules": ["必须显式时区", "定时任务必须幂等"]},
+    "config": {"role": "Config", "max_complexity": 5, "rules": ["只做配置装配", "不允许业务逻辑"]},
+    "util": {"role": "Util", "max_complexity": 10, "rules": ["工具类必须无状态", "方法必须纯函数"]},
+    "test": {"role": "Test", "max_complexity": 20, "rules": ["测试数据保持字面量", "不强制提常量"]},
+}
+
+def file_budget(rel_path):
+    """根据文件相对路径识别角色与质量预算。"""
+    p = rel_path.lower()
+    for key, budget in FILE_BUDGETS.items():
+        if f"/{key}/" in p or p.endswith(f"{key}.java") or f"/{key}" in p.split("/")[-1].lower():
+            return budget
+    return {"role": "Default", "max_complexity": 15, "rules": ["默认复杂度<=15", "遵循通用 Sonar 规则"]}
+
+# 优先级队列（层 10）：P0-P4
+PRIORITY_MAP = {
+    "S9999": ("P0", "编译/语法错误"),
+    "S8688": ("P1", "时区缺失（生产风险）"),
+    "S1168": ("P1", "返回 null 集合（NPE 风险）"),
+    "S3358": ("P2", "嵌套三元（可读性）"),
+    "S3776": ("P2", "认知复杂度（可维护性）"),
+    "S107": ("P2", "参数过多（可维护性）"),
+    "S1172": ("P3", "未使用参数（代码质量）"),
+    "S1128": ("P3", "未使用 import（代码质量）"),
+    "S6204": ("P3", "Collectors.toList（风格）"),
+    "S1192": ("P3", "重复字符串（风格）"),
+    "S9998": ("P1", "NOSONAR 滥用（质量逃避）"),
+}
+
+def priority_of(rule):
+    return PRIORITY_MAP.get(rule, ("P3", "其他"))
+
+def cmd_snapshot(args):
+    """记录当前 problems 快照（层 8 新增诊断门禁的基线）。"""
+    root = pathlib.Path(args.root)
+    if not root.exists():
+        print(f"✗ 项目根不存在: {root}"); return 2
+    problems = run_checks(root)
+    ev = evidence_dir(root)
+    ev.mkdir(parents=True, exist_ok=True)
+    snap = {
+        "snapshot_at": __import__("datetime").datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "project": str(root),
+        "problems_count": len(problems),
+        "problems": [p.to_dict() for p in problems],
+    }
+    out = ev / "sonar-snapshot.json"
+    out.write_text(json.dumps(snap, ensure_ascii=False, indent=2), encoding="utf-8")
+    c = count_by_sev(problems)
+    print(f"✓ 快照已写入 {out}")
+    print(f"  基线: {len(problems)} problems (ERROR={c['ERROR']}, WARNING={c['WARNING']})")
+    return 0
+
+def cmd_diff(args):
+    """对比快照 vs 当前，输出新增/修复/总数（层 8 新增诊断门禁）。"""
+    root = pathlib.Path(args.root)
+    if not root.exists():
+        print(f"✗ 项目根不存在: {root}"); return 2
+    snap_file = evidence_dir(root) / "sonar-snapshot.json"
+    if not snap_file.exists():
+        print("✗ 无快照，请先运行: engineering snapshot <root>"); return 2
+    snap = json.loads(snap_file.read_text(encoding="utf-8"))
+    current = run_checks(root)
+    snap_keys = {(p["rule"], p["file"], p["line"]) for p in snap["problems"]}
+    cur_keys = {(p.rule, p.file, p.line) for p in current}
+    fixed = snap_keys - cur_keys
+    added = cur_keys - snap_keys
+    print(f"📊 Sonar 诊断对比（基线 {snap['problems_count']} → 当前 {len(current)}）")
+    print(f"  ✅ 已修复: {len(fixed)} 个")
+    for r, f, l in sorted(fixed)[:10]:
+        print(f"    - {r} {f}:{l}")
+    if len(fixed) > 10: print(f"    … 共 {len(fixed)} 个")
+    print(f"  🔴 新增问题: {len(added)} 个")
+    for r, f, l in sorted(added):
+        print(f"    + {r} {f}:{l}")
+    if added:
+        print(f"\n⚠ 新增诊断门禁触发：新增 {len(added)} 个问题，必须修复或回滚本次写入，不允许带着新增问题继续。")
+        return 1
+    print("\n🟢 无新增问题，允许继续。")
+    return 0
+
+def cmd_queue(args):
+    """Sonar Fix Queue：按 P0-P4 优先级输出修复队列 + 分批计划（层 10/14）。"""
+    root = pathlib.Path(args.root)
+    if not root.exists():
+        print(f"✗ 项目根不存在: {root}"); return 2
+    problems = run_checks(root)
+    if not problems:
+        print("🟢 0 problems，无需修复队列。"); return 0
+    by_prio = {}
+    for p in problems:
+        prio, desc = priority_of(p.rule)
+        by_prio.setdefault(prio, []).append((p, desc))
+    print(f"📋 Sonar Fix Queue（共 {len(problems)} 个问题）")
+    batch_plan = [
+        ("第一批", "P0", "所有 Java Error / 编译错误", "必须先清零，不允许进入下一批"),
+        ("第二批", "P1", "时区缺失 / null 集合 / NOSONAR 滥用", "生产风险，清零后再继续"),
+        ("第三批", "P2", "复杂度 / 嵌套三元 / 参数过多", "高风险可维护性问题"),
+        ("第四批", "P3", "重复字符串 / 未用 import / 风格", "低风险风格问题，最后处理"),
+    ]
+    for batch_name, prio, desc, rule in batch_plan:
+        items = by_prio.get(prio, [])
+        print(f"\n  {batch_name}（{prio}）{desc} — {len(items)} 个")
+        print(f"    规则: {rule}")
+        for p, d in items[:8]:
+            print(f"    [{p.rule}] {p.file}:{p.line} — {d}")
+        if len(items) > 8: print(f"    … 共 {len(items)} 个")
+    # 写队列到 evidence
+    ev = evidence_dir(root)
+    ev.mkdir(parents=True, exist_ok=True)
+    queue_data = {
+        "generated_at": __import__("datetime").datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "total": len(problems),
+        "batches": {prio: [{"rule": p.rule, "file": p.file, "line": p.line, "message": p.message} for p, _ in items]
+                    for prio, items in by_prio.items()},
+    }
+    out = ev / "fix-queue.json"
+    out.write_text(json.dumps(queue_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\n✓ 队列已写入 {out}")
+    return 0
+
+def _impact_checks(code):
+    """检测文件改动类型，返回风险检查列表。"""
+    checks = []
+    if re.search(r"(public|private|protected)\s+[\w<>,\.\[\]\s]+\s+\w+\s*\([^)]*\)", code):
+        checks.append("方法签名变更 → 查调用方")
+    if re.search(r"return\s+null", code):
+        checks.append("返回 null → 查调用方是否依赖 null")
+    if re.search(r"private\s+static\s+final\s+String", code):
+        checks.append("常量变更 → 查是否参与协议/数据库枚举")
+    if re.search(r"(LocalDate|LocalDateTime|LocalTime|Instant|Date|Calendar)\s*\.", code):
+        checks.append("时间逻辑 → 查测试和时区")
+    return checks
+
+def _find_callers(root, method, exclude_rel):
+    """rg 搜索方法调用方，排除自身文件。"""
+    rr = subprocess.run(["rg", "-l", method, str(root), "--glob", "*.java", "--glob", "*.py"],
+                         capture_output=True, text=True)
+    return [x for x in rr.stdout.splitlines() if x and not x.endswith(exclude_rel)]
+
+def _print_impact_findings(root, findings):
+    """输出影响面分析结果（含调用方搜索）。"""
+    for rel, role, checks, code in findings:
+        print(f"\n  📄 {rel}（角色: {role}）")
+        for c in checks:
+            print(f"    ⚠ {c}")
+            if "方法签名" in c:
+                methods = re.findall(r"(?:public|private|protected)\s+[\w<>,\.\[\]\s]+?\s+(\w+)\s*\(", code)
+                for m in methods[:3]:
+                    callers = _find_callers(root, m, rel)
+                    if callers:
+                        print(f"      调用方 ({m}): {len(callers)} 个文件")
+                        for c2 in callers[:3]: print(f"        - {c2}")
+
+def cmd_impact(args):
+    """改动后影响面分析（层 13）：查方法签名/返回值/常量/时间逻辑的调用方。"""
+    root = pathlib.Path(args.root)
+    if not root.exists():
+        print(f"✗ 项目根不存在: {root}"); return 2
+    r = subprocess.run(["git", "-C", str(root), "diff", "--name-only", "HEAD"], capture_output=True, text=True)
+    changed = [x for x in r.stdout.splitlines() if x.endswith((".java", ".py", ".js", ".ts"))]
+    if not changed:
+        print("ℹ 无代码文件改动（git diff HEAD 为空），影响面分析跳过。")
+        return 0
+    print(f"🔍 改动影响面分析（{len(changed)} 个文件）")
+    findings = []
+    for f in changed:
+        full = root / f
+        if not full.exists(): continue
+        try:
+            code = full.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        rel = str(full.relative_to(root))
+        checks = _impact_checks(code)
+        if checks:
+            findings.append((rel, file_budget(rel)["role"], checks, code))
+    if not findings:
+        print("  ℹ 未检测到高风险改动类型。")
+    _print_impact_findings(root, findings)
+    ev = evidence_dir(root)
+    ev.mkdir(parents=True, exist_ok=True)
+    out = ev / "impact-analysis.json"
+    out.write_text(json.dumps({"changed_files": changed, "findings": [
+        {"file": r, "role": role, "checks": checks} for r, role, checks, _ in findings
+    ]}, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\n✓ 影响面报告已写入 {out}")
+    return 0
+
+def cmd_report(args):
+    """AI 自检报告（层 15）：对比快照，生成完整交付报告。没有报告不允许提交。"""
+    root = pathlib.Path(args.root)
+    if not root.exists():
+        print(f"✗ 项目根不存在: {root}"); return 2
+    snap_file = evidence_dir(root) / "sonar-snapshot.json"
+    snap_count = None
+    if snap_file.exists():
+        snap = json.loads(snap_file.read_text(encoding="utf-8"))
+        snap_count = snap["problems_count"]
+    current = run_checks(root)
+    c = count_by_sev(current)
+    # 编译状态（Java 项目尝试 mvn compile）
+    compile_status = "未跑（非 Java 项目或无 pom.xml）"
+    pom = root / "pom.xml"
+    if pom.exists() or (root / "backend" / "pom.xml").exists():
+        compile_status = "需手动运行 mvn compile 验证"
+    # 统计 NOSONAR 滥用数量
+    nosonar_count = sum(1 for p in current if p.rule == "S9998")
+    # 改动文件
+    r = subprocess.run(["git", "-C", str(root), "diff", "--name-only", "HEAD"], capture_output=True, text=True)
+    changed = [x for x in r.stdout.splitlines() if x.strip()]
+    report = {
+        "generated_at": __import__("datetime").datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "project": str(root),
+        "修复前_problems": snap_count,
+        "修复后_problems": len(current),
+        "新增_problems": max(0, len(current) - (snap_count or 0)),
+        "ERROR": c["ERROR"],
+        "WARNING": c["WARNING"],
+        "编译": compile_status,
+        "NOSONAR_使用": nosonar_count,
+        "修改文件数": len(changed),
+        "修改文件": changed[:30],
+        "结论": "PASS" if c["ERROR"] == 0 and c["WARNING"] == 0 else "FAIL（仍有未清零问题）",
+    }
+    ev = evidence_dir(root)
+    ev.mkdir(parents=True, exist_ok=True)
+    out = ev / "self-check-report.json"
+    out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    print("📋 AI 自检报告")
+    for k, v in report.items():
+        if k == "修改文件": continue
+        print(f"  {k}: {v}")
+    if report["结论"] == "PASS":
+        print("\n🟢 自检通过，允许提交。")
+    else:
+        print(f"\n🔴 自检未通过：仍有 {len(current)} 个问题，不允许提交。")
+    return 0 if report["结论"] == "PASS" else 1
+
+def cmd_verify_stale(args):
+    """Stale Diagnostic 识别（层 11）：VSCode 报 Java Error 但 Maven 编译过了。"""
+    root = pathlib.Path(args.root)
+    if not root.exists():
+        print(f"✗ 项目根不存在: {root}"); return 2
+    target = pathlib.Path(args.file)
+    target_abs = target.resolve() if target.is_absolute() else (root / target).resolve()
+    if not target_abs.is_file():
+        print(f"✗ 文件不存在: {target_abs}"); return 2
+    # 1. 读源码对应行
+    code = target_abs.read_text(encoding="utf-8")
+    lines = code.split("\n")
+    print(f"🔍 Stale Diagnostic 验证 · {target_abs.name}")
+    print(f"  文件行数: {len(lines)}")
+    # 2. 跑 mvn compile（如果是 Java 项目）
+    pom = root / "pom.xml"
+    backend_pom = root / "backend" / "pom.xml"
+    if pom.exists() or backend_pom.exists():
+        mvn_dir = str(pom.parent) if pom.exists() else str(backend_pom.parent)
+        print(f"  运行 mvn compile（{mvn_dir}）…")
+        rr = subprocess.run(["mvn", "-q", "compile", "-DskipTests"], cwd=mvn_dir,
+                            capture_output=True, text=True, timeout=300)
+        if rr.returncode == 0:
+            print("  ✅ Maven 编译通过")
+            print("  ⚠ 标记为 suspected_stale：VSCode 报 Error 但编译通过，可能是 Language Server 缓存")
+            print("  建议：触发 Java Language Server refresh（VSCode 命令: Java: Clean Java Language Server Workspace）")
+            return 0
+        else:
+            print(f"  🔴 Maven 编译失败（exit {rr.returncode}）")
+            print("  这是真实错误，不是 stale diagnostic，必须修复。")
+            print(rr.stderr[-500:] if rr.stderr else rr.stdout[-500:])
+            return 1
+    else:
+        print("  ℹ 非 Maven 项目，跳过编译验证。")
+        return 0
+
 def main():
     p = argparse.ArgumentParser(description="SonarQube 硬门禁适配器")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -552,6 +851,12 @@ def main():
     s3 = sub.add_parser("hook"); s3.add_argument("root"); s3.add_argument("--staged", action="store_true"); s3.set_defaults(fn=cmd_hook)
     s4 = sub.add_parser("install-hook"); s4.add_argument("repo"); s4.set_defaults(fn=cmd_install_hook)
     s5 = sub.add_parser("sonar-plan"); s5.add_argument("root"); s5.add_argument("file"); s5.set_defaults(fn=cmd_sonar_plan)
+    s6 = sub.add_parser("snapshot"); s6.add_argument("root"); s6.set_defaults(fn=cmd_snapshot)
+    s7 = sub.add_parser("diff"); s7.add_argument("root"); s7.set_defaults(fn=cmd_diff)
+    s8 = sub.add_parser("queue"); s8.add_argument("root"); s8.set_defaults(fn=cmd_queue)
+    s9 = sub.add_parser("impact"); s9.add_argument("root"); s9.set_defaults(fn=cmd_impact)
+    s10 = sub.add_parser("report"); s10.add_argument("root"); s10.set_defaults(fn=cmd_report)
+    s11 = sub.add_parser("verify-stale"); s11.add_argument("root"); s11.add_argument("file"); s11.set_defaults(fn=cmd_verify_stale)
     a = p.parse_args()
     sys.exit(a.fn(a) or 0)
 
