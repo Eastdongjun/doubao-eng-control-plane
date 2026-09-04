@@ -6,10 +6,12 @@
 
 | 目录 | 说明 |
 |---|---|
-| `skills/` | 用户技能基线快照（82 个，全中文化），来自 `~/.doubao/.../.user_skills` |
+| `skills/` | 用户技能基线快照（83 个，全中文化），来自 `~/.doubao/.../.user_skills` |
 | `vscode-mcp/` | VSCode 桥接 MCP Server（9 个 dev_* 工具，含打字机模式 dev_typewrite） |
-| `governance-demo/` | 可信执行治理实测（L0-L4 分级 / 审计 / 回滚） |
+| `governance-demo/` | 可信执行治理 + 任务追踪 + 多模态评测 + 执行回放 |
 | `auto-dev-demo/` | 自动编码闭环演示（写→跑→查→改→注释→归零） |
+| `monitor/` | MCP 健康监控（launchd 每 5 分钟 + 告警） |
+| `.github/workflows/ci.yml` | GitHub Actions 流水线（语法/frontmatter/一致性） |
 | `vscode-demo/` `proj-b-demo/` | 多项目隔离演示 |
 
 ## 核心能力清单
@@ -18,6 +20,11 @@
 - **可信执行治理**：动作风险分级（L0-L4）、改前备份、执行后审计日志、失败回滚
 - **工程化总控**：12 阶段路由 + TodoWrite 清单 + 自动推进
 - **多项目隔离**：所有操作按项目路径隔离，并行互不干扰
+- **任务追踪**：复杂任务结构化 trace（意图→计划→工具→失败点），`task_trace.py`
+- **执行回放**：基于 trace 重建任务时间线，`replay.py list|<id> [--html]`
+- **多模态评测**：五维垂直评测（代码/Excel/PPT/网页/报告），`eval_multimodal.py [--selftest]`
+- **能力注册中心**：工具/技能元数据（成本/失败模式/可回滚性），`capability_registry.py`
+- **备份恢复演练**：`backup_restore_drill.py`（备份→丢失→恢复→md5 校验）
 
 ## 恢复 / 同步方法
 
