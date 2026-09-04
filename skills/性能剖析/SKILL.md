@@ -1,6 +1,6 @@
 ---
 name: 性能剖析
-description: "Systematic performance profiling for Node.js, Python, and Go applications. Identifies CPU, memory, and I/O bottlenecks, generates flamegraphs, analyzes bundle sizes, optimizes database queries, runs load tests with k6 and Artillery. Always measures before and after. Use when investigating a slow endpoint, planning a performance budget, or hunting a memory leak in production."
+description: "剖析代码/系统性能：定位瓶颈、测量热点、给出优化。当用户要求性能优化/排查慢问题时使用。"
 ---
 
 # Performance Profiler

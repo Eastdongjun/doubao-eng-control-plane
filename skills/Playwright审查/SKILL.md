@@ -1,9 +1,6 @@
 ---
 name: Playwright审查
 description: "审查 Playwright 测试质量：可读性、稳定性、断言。当用户要求评审测试代码时使用。"
-  Review Playwright tests for quality. Use when user says "review tests",
-  "check test quality", "audit tests", "improve tests", "test code review",
-  or "playwright best practices check".
 ---
 
 # Review Playwright Tests

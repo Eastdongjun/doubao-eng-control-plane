@@ -1,6 +1,6 @@
 ---
 name: 具名角色对抗审查
-description: "Code review through the lens of real engineers' documented philosophies (Torvalds, Thompson, Carmack, Kent Beck, Jobs, Cagan). Complements abstract-role adversarial review with named, sourced perspectives. Use when automated review findings feel generic, when a PR has architectural or UX impact, or when the author wants pre-submit hardening beyond standard checks."
+description: "用多个具名专家角色（架构师/安全/产品）交叉对抗审查方案。当用户要求多视角挑刺时使用。"
 ---
 
 # Named-Persona Adversarial Review

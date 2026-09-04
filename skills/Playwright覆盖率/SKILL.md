@@ -1,9 +1,6 @@
 ---
 name: Playwright覆盖率
 description: "分析 Playwright 测试覆盖率：页面、组件、分支。当用户要求测试覆盖率评估时使用。"
-  Analyze test coverage gaps. Use when user says "test coverage",
-  "what's not tested", "coverage gaps", "missing tests", "coverage report",
-  or "what needs testing".
 ---
 
 # Analyze Test Coverage Gaps

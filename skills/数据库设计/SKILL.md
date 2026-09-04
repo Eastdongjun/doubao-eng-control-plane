@@ -1,6 +1,6 @@
 ---
 name: 数据库设计
-description: "Use when the user asks to design database schemas, plan data migrations, optimize queries, choose between SQL and NoSQL, or model data relationships."
+description: "设计数据库 schema：实体关系、范式、索引、约束。当用户要求设计数据表/数据库时使用。"
 ---
 
 # Database Designer - POWERFUL Tier Skill

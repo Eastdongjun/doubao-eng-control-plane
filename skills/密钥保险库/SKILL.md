@@ -1,6 +1,6 @@
 ---
 name: 密钥保险库
-description: "Use when the user asks to set up secret management infrastructure, integrate HashiCorp Vault, configure cloud secret stores (AWS Secrets Manager, Azure Key Vault, GCP Secret Manager), implement secret rotation, or audit secret access patterns."
+description: "管理密钥保险库：存储、轮换、访问控制、审计。当用户要求管理敏感凭据时使用。"
 ---
 
 # Secrets Vault Manager

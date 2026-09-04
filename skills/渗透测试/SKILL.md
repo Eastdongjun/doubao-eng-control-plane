@@ -1,6 +1,6 @@
 ---
 name: 渗透测试
-description: "Use when the user asks to perform security audits, penetration testing, vulnerability scanning, OWASP Top 10 checks, or offensive security assessments. Covers static analysis, dependency scanning, secret detection, API security testing, and pen test report generation."
+description: "渗透测试方法论：侦察、漏洞、利用、报告。当用户要求安全测试/漏洞评估时使用。"
 ---
 
 # Security Penetration Testing

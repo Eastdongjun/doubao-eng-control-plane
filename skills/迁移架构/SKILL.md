@@ -1,6 +1,6 @@
 ---
 name: 迁移架构
-description: "Zero-downtime migration planning, compatibility validation, and rollback strategy generation. Tools for system, database, and infrastructure migrations with minimal business impact. Use when planning a database migration, infrastructure cutover, system replacement, or any high-risk transition that needs explicit rollback paths."
+description: "设计系统迁移方案：数据迁移、双写、灰度、回滚。当用户要求系统/数据迁移时使用。"
 ---
 
 # Migration Architect

@@ -1,6 +1,6 @@
 ---
 name: 智能体设计
-description: "Use when the user asks to design a multi-agent system, pick an orchestration pattern (supervisor/swarm/pipeline), generate tool schemas for agents, or evaluate agent execution logs for cost, latency, and failure bottlenecks. Examples: 'design an agent architecture for research automation', 'generate Anthropic tool schemas from these tool descriptions', 'analyze these agent run logs for bottlenecks'. NOT for Claude Code workflow files (use workflow-builder) or single-agent prompt design (use agent-workflow-designer)."
+description: "设计高质量的 AI Agent（智能体）：定义角色、工具、边界与工作流。当用户要设计/规划一个智能体或 Agent 工作流时使用。"
 ---
 
 # Agent Designer — Multi-Agent System Architecture

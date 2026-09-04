@@ -1,6 +1,6 @@
 ---
 name: 红队
-description: "Use when planning or executing authorized red team engagements, attack path analysis, or offensive security simulations. Covers MITRE ATT&CK kill-chain planning, technique scoring, choke point identification, OPSEC risk assessment, and crown jewel targeting."
+description: "红队演练：发现系统弱点、模拟攻击、报告。当用户要求安全攻防演练时使用。"
 ---
 
 # Red Team

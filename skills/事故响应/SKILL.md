@@ -1,6 +1,6 @@
 ---
 name: 事故响应
-description: "Use when a security incident has been detected or declared and needs classification, triage, escalation path determination, and forensic evidence collection. Covers SEV1-SEV4 classification, false positive filtering, incident taxonomy, and NIST SP 800-61 lifecycle."
+description: "系统故障响应流程：发现、隔离、恢复、根因、复盘。当用户要求处理线上事故时使用。"
 ---
 
 # Incident Response

@@ -1,6 +1,6 @@
 ---
 name: 事故指挥官
-description: "Comprehensive incident response framework from detection through resolution and post-incident review. Battle-tested SRE/DevOps practices: severity classification, timeline reconstruction, structured post-incident analysis. Use when declaring an incident, coordinating multi-team response during an outage, leading a post-mortem, or setting up on-call practices for a new service."
+description: "事故指挥：角色分工、沟通、决策、复盘。当用户要求主持事故处理时使用。"
 ---
 
 # Incident Commander Skill

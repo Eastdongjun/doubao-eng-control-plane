@@ -1,6 +1,6 @@
 ---
 name: Playwright专业
-description: "Production-grade Playwright testing toolkit. Use when the user mentions Playwright tests, end-to-end testing, browser automation, fixing flaky tests, test migration, CI/CD testing, or test suites. Generate tests, fix flaky failures, migrate from Cypress/Selenium, sync with TestRail, run on BrowserStack. 55 templates, 3 agents, smart reporting."
+description: "Playwright 网页自动化测试专业工作流：编写、运行、修复、报告。当用户要求用 Playwright 做网页测试时使用。"
 ---
 
 # Playwright Pro

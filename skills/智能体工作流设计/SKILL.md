@@ -1,6 +1,6 @@
 ---
 name: 智能体工作流设计
-description: "Design production-grade multi-agent workflows with clear pattern choice (sequential, parallel, hierarchical), handoff contracts, failure handling, and cost/context controls. Use when architecting a multi-step agent pipeline, choosing between single-agent vs multi-agent approaches, or refactoring an LLM workflow that suffers from context bloat or unreliable handoffs."
+description: "设计 Agent 工作流：任务分解、工具编排、人工确认点。当用户要求设计多步 Agent 自动化流程时使用。"
 ---
 
 # Agent Workflow Designer

@@ -1,6 +1,6 @@
 ---
 name: Stripe集成专家
-description: "Production-grade Stripe integrations: subscriptions with trials and proration, one-time payments, usage-based billing, checkout sessions, idempotent webhook handlers, customer portal, and invoicing. Covers Next.js, Express, and Django patterns. Use when integrating Stripe for the first time, debugging webhook reliability issues, migrating from a different payment provider, or adding usage-based billing to an existing subscription product."
+description: "Stripe 支付集成：订阅、发票、webhook、退款。当用户要求接入 Stripe 支付时使用。"
 ---
 
 # Stripe Integration Expert

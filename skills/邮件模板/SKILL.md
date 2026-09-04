@@ -1,6 +1,6 @@
 ---
 name: 邮件模板
-description: "Build complete transactional email systems: React Email templates, provider integration (Resend, Postmark, SendGrid, AWS SES), preview server, i18n support, dark mode, spam optimization, analytics tracking. Use when adding transactional email to a new product, migrating between email providers, refactoring legacy email templates for accessibility, or adding internationalization to existing templates."
+description: "设计邮件模板：结构、文案、响应式。当用户要求写营销/通知邮件时使用。"
 ---
 
 # Email Template Builder

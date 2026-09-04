@@ -1,6 +1,6 @@
 ---
 name: 零幻觉编码
-description: "Runs a disciplined Discuss -> Map -> Decompose -> Execute -> Verify loop that grounds code in verified structure — no invented APIs, no assumed imports, no placeholder code — with a lazy-senior-dev YAGNI ladder that deletes unnecessary code before it is written. Use when a coding task is high-stakes, complex, or spans existing code (auth, databases, migrations, multi-file features), or when the user explicitly asks to plan carefully before coding, avoid hallucinated code, or work rigorously. Not for trivial edits, typos, or throwaway one-off scripts — those do not need the full loop."
+description: "写代码时用可核验的事实与命令输出，杜绝编造 API/路径/行为。当用户要求高可靠性编码、防幻觉时使用。"
 ---
 
 # Zero-Hallucination Coder

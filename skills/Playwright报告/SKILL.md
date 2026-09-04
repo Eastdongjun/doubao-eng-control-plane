@@ -1,8 +1,6 @@
 ---
 name: Playwright报告
 description: "生成 Playwright 测试报告：结果、耗时、失败详情。当用户要求测试报告时使用。"
-  Generate test report. Use when user says "test report", "results summary",
-  "test status", "show results", "test dashboard", or "how did tests go".
 ---
 
 # Smart Test Reporting

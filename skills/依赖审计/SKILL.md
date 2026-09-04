@@ -1,6 +1,6 @@
 ---
 name: 依赖审计
-description: "Audit and manage dependencies across multi-language projects. Identifies vulnerabilities, license conflicts, transitive dependency risks, and safe-upgrade paths. Use when auditing third-party packages before release, investigating a CVE, planning a major version bump, or running a license-compliance review. Examples: 'audit our npm dependencies', 'do we have GPL contamination', 'plan the upgrade to React 19'."
+description: "审计项目依赖：版本、漏洞、许可证、冗余。当用户要求检查依赖安全/合规/升级时使用。"
 ---
 
 # Dependency Auditor

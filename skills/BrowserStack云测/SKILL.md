@@ -1,9 +1,6 @@
 ---
 name: BrowserStack云测
 description: "用 BrowserStack 做跨浏览器云端测试。当用户要求跨浏览器兼容测试时使用。"
-  Run tests on BrowserStack. Use when user mentions "browserstack",
-  "cross-browser", "cloud testing", "browser matrix", "test on safari",
-  "test on firefox", or "browser compatibility".
 ---
 
 # BrowserStack Integration

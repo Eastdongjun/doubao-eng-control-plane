@@ -1,6 +1,6 @@
 ---
 name: SQL数据库助手
-description: "Use when the user asks to write SQL queries, optimize database performance, generate migrations, explore database schemas, or work with ORMs like Prisma, Drizzle, TypeORM, or SQLAlchemy."
+description: "编写/优化 SQL：查询、索引、调优、排障。当用户要求写 SQL 或优化查询时使用。"
 ---
 
 # SQL Database Assistant - POWERFUL Tier Skill

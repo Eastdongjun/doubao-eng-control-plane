@@ -1,6 +1,6 @@
 ---
 name: 严格API
-description: "Use when the user says 'no hallucinations', 'verify APIs', 'reality check', or 'don't invent functions'. Prevents the agent from calling methods, imports, or variables that do not provably exist in the user's installed version."
+description: "以严格标准设计 API：类型安全、错误契约、向后兼容、文档。当用户要求高质量/严格的接口设计时使用。"
 ---
 
 # Strict API Verification

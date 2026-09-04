@@ -1,6 +1,6 @@
 ---
 name: API设计审查
-description: "Comprehensive REST API design review with automated linting, breaking-change detection, and design scorecards. Catches inconsistent conventions, missing versioning, and design smells before APIs ship. Use when reviewing a PR that adds or changes API endpoints, auditing an existing API for v2 migration, or establishing API standards for a team."
+description: "以资深评审视角审查 API 设计：命名、版本、错误处理、向后兼容。当用户要求评审接口设计或 API 规范时使用。"
 ---
 
 # API Design Reviewer

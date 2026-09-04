@@ -1,9 +1,6 @@
 ---
 name: TestRail集成
 description: "把 Playwright 测试结果同步到 TestRail。当用户要求对接 TestRail 时使用。"
-  Sync tests with TestRail. Use when user mentions "testrail", "test management",
-  "test cases", "test run", "sync test cases", "push results to testrail",
-  or "import from testrail".
 ---
 
 # TestRail Integration

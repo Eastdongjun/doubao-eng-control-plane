@@ -1,9 +1,6 @@
 ---
 name: Playwright用例生成
 description: "用 Playwright 自动生成测试用例。当用户要求为页面自动写测试时使用。"
-  Generate Playwright tests. Use when user says "write tests", "generate tests",
-  "add tests for", "test this component", "e2e test", "create test for",
-  "test this page", or "test this feature".
 ---
 
 # Generate Playwright Tests

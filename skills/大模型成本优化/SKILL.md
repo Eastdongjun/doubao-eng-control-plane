@@ -1,6 +1,6 @@
 ---
 name: 大模型成本优化
-description: "Use proactively whenever LLM API costs come up -- or should. Triggers include: 'my AI costs are too high', 'optimize token usage', 'which model should I use', 'LLM spend is out of control', 'implement prompt caching', 'we're about to launch an AI feature', 'build me an AI endpoint'. Don't wait for an explicit cost complaint -- if someone is building an AI feature, designing an LLM endpoint, or choosing between models, cost architecture belongs in the conversation. Apply immediately when any of these are true: a system prompt appears that exceeds a few hundred tokens, all requests are hitting the same model, max_tokens is not set, or no per-feature cost logging exists. NOT for RAG pipeline design (use rag-architect). NOT for improving prompt quality or effectiveness (use senior-prompt-engineer)."
+description: "优化 LLM 调用成本：缓存、路由、降级、批处理、token 压缩。当用户要求降低 AI 接口费用/优化模型调用时使用。"
 ---
 
 # LLM Cost Optimizer

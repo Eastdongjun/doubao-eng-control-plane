@@ -1,6 +1,6 @@
 ---
 name: 整页截图
-description: "Use when the user asks to capture a full-page screenshot, long screenshot, or complete page capture of a web page. Handles SPA scroll containers, lazy-loaded images, and very tall pages via Chrome DevTools Protocol with zero external dependencies."
+description: "对网页做整页截图（含滚动区域），供视觉验证与证据留存。当用户要求截取完整网页时使用。"
 ---
 
 # Full Page Screenshot

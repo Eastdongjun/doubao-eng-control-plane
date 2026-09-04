@@ -1,6 +1,6 @@
 ---
 name: 演示视频
-description: "Use when the user asks to create a demo video, product walkthrough, feature showcase, animated presentation, marketing video, or GIF from screenshots or scene descriptions. Orchestrates playwright, ffmpeg, and edge-tts MCPs to produce polished video content."
+description: "为产品/功能制作演示视频的分镜与脚本。当用户要求做产品演示视频时使用。"
 ---
 
 # Demo Video

@@ -1,6 +1,6 @@
 ---
 name: 规格驱动开发
-description: "Use when the user asks to write specs before code, define acceptance criteria, plan features before implementation, generate tests from specifications, or follow spec-first development practices."
+description: "先写规格再编码的工作流：接口契约、验收标准、可测试。当用户要求规范驱动开发/先定契约时使用。"
 ---
 
 # Spec-Driven Workflow — POWERFUL

@@ -1,9 +1,6 @@
 ---
 name: Playwright初始化
 description: "初始化 Playwright 项目：配置、浏览器、脚手架。当用户要求搭建 Playwright 时使用。"
-  Set up Playwright in a project. Use when user says "set up playwright",
-  "add e2e tests", "configure playwright", "testing setup", "init playwright",
-  or "add test infrastructure".
 ---
 
 # Initialize Playwright Project

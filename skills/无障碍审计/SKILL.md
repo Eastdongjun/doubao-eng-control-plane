@@ -1,6 +1,6 @@
 ---
 name: 无障碍审计
-description: "Accessibility audit skill for scanning, fixing, and verifying WCAG 2.2 Level A and AA compliance across React, Next.js, Vue, Angular, Svelte, and plain HTML codebases. Use when auditing accessibility, fixing a11y violations, checking color contrast, generating compliance reports, or integrating accessibility checks into CI/CD pipelines."
+description: "审计 Web 可访问性：WCAG、ARIA、键盘、对比度。当用户要求检查网页无障碍时使用。"
 ---
 
 # Accessibility Audit

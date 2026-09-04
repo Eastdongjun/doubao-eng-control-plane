@@ -1,6 +1,6 @@
 ---
 name: AI安全
-description: "Use when assessing AI/ML systems for prompt injection, jailbreak vulnerabilities, model inversion risk, data poisoning exposure, or agent tool abuse. Covers MITRE ATLAS technique mapping, injection signature detection, and adversarial robustness scoring."
+description: "AI 应用安全：提示注入、数据泄漏、模型滥用防护。当用户要求 AI 系统安全评估时使用。"
 ---
 
 # AI Security

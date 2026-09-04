@@ -1,6 +1,6 @@
 ---
 name: 数据库表结构设计
-description: "Use when the user asks to create ERD diagrams, normalize database schemas, design table relationships, or plan schema migrations."
+description: "设计并演进数据库表结构：迁移、兼容、版本管理。当用户要求建表/改表/写迁移脚本时使用。"
 ---
 
 # Database Schema Designer

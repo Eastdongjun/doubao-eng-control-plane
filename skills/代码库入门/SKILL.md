@@ -1,6 +1,6 @@
 ---
 name: 代码库入门
-description: "Analyze a codebase and generate onboarding documentation for engineers, tech leads, and contractors. Fast fact-gathering and repeatable onboarding outputs. Use when onboarding a new engineer, writing architecture-overview docs for a new project, or producing tech-lead briefings for unfamiliar repos."
+description: "新成员/新 Agent 的代码库上手指南：架构总览、构建运行、约定。当用户要求快速上手一个陌生代码库时使用。"
 ---
 
 # Codebase Onboarding

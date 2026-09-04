@@ -1,6 +1,6 @@
 ---
 name: API测试套件构建
-description: "Use when the user asks to generate API tests, create integration test suites, test REST endpoints, or build contract tests."
+description: "为 API 构建自动化测试套件：边界、鉴权、错误码、性能。当用户要求为接口写测试时使用。"
 ---
 
 # API Test Suite Builder

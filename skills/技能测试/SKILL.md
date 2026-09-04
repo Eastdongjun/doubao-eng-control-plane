@@ -1,6 +1,6 @@
 ---
 name: 技能测试
-description: "Validate, test, and score the quality of skills within the claude-skills ecosystem. Comprehensive meta-skill: structure validation, Python script testing (syntax + imports + runtime + output format), multi-dimensional quality scoring with letter grades and tier classification (BASIC/STANDARD/POWERFUL). Use when authoring a new skill, auditing existing skills for tier promotion, setting up pre-commit hooks for skill quality, or integrating skill QA into CI."
+description: "为技能建立自动化测试：触发、输出、质量评分。当用户要求验证一个技能是否好用/达标时使用。"
 ---
 
 # Skill Tester

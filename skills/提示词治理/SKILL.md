@@ -1,6 +1,6 @@
 ---
 name: 提示词治理
-description: "Use when managing prompts in production at scale: versioning prompts, running A/B tests on prompts, building prompt registries, preventing prompt regressions, or creating eval pipelines for production AI features. Triggers: 'manage prompts in production', 'prompt versioning', 'prompt regression', 'prompt A/B test', 'prompt registry', 'eval pipeline'. NOT for writing or improving individual prompts (use senior-prompt-engineer). NOT for RAG pipeline design (use rag-architect). NOT for LLM cost reduction (use llm-cost-optimizer)."
+description: "治理 prompt：版本、评估、回滚、生产管理。当用户要求管理/治理 AI 提示词时使用。"
 ---
 
 # Prompt Governance

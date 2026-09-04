@@ -1,6 +1,6 @@
 ---
 name: 环境密钥管理
-description: "Manage environment-variable hygiene and secrets safety across local development and production. Practical auditing, drift awareness, rotation readiness. Use when auditing .env files for committed secrets, planning a credential rotation, debugging missing-env-var production incidents, or hardening a new project against secrets leakage."
+description: "安全管理环境变量与密钥：.env 规范、注入、避免泄漏。当用户要求配置环境变量/管理密钥时使用。"
 ---
 
 # Env & Secrets Manager

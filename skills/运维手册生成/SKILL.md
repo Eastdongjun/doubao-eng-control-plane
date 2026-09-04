@@ -1,6 +1,6 @@
 ---
 name: 运维手册生成
-description: "Generate operational runbooks from a service name — deployment, incident response, maintenance, and rollback workflows. Templated structure customizable per environment. Use when documenting on-call procedures for a new service, standardizing incident response across teams, or producing runbooks before launching to production."
+description: "为系统/服务生成运维手册：启动、排障、应急、恢复。当用户要求写运维文档时使用。"
 ---
 
 # Runbook Generator

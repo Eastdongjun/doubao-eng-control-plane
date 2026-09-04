@@ -1,9 +1,6 @@
 ---
 name: Playwright修复
 description: "修复失败的 Playwright 测试：定位、改选择器、稳定化。当用户要求修复网页测试失败时使用。"
-  Fix failing or flaky Playwright tests. Use when user says "fix test",
-  "flaky test", "test failing", "debug test", "test broken", "test passes
-  sometimes", or "intermittent failure".
 ---
 
 # Fix Failing or Flaky Tests

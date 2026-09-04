@@ -1,6 +1,6 @@
 ---
 name: 云安全
-description: "Use when assessing cloud infrastructure for security misconfigurations, IAM privilege escalation paths, S3 public exposure, open security group rules, or IaC security gaps. Covers AWS, Azure, and GCP posture assessment with MITRE ATT&CK mapping."
+description: "云环境安全：IAM、网络隔离、密钥、审计。当用户要求云安全加固时使用。"
 ---
 
 # Cloud Security

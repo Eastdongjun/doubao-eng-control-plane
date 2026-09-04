@@ -1,6 +1,6 @@
 ---
 name: 测试用例追踪
-description: "Use when the user asks to track technical changes, create change records, manage TC lifecycles, or hand off work between AI sessions. Covers init/create/update/status/resume/close/export workflows for structured code change documentation."
+description: "追踪测试用例：需求到用例到执行的映射。当用户要求管理测试用例与覆盖率时使用。"
 ---
 
 # TC Tracker

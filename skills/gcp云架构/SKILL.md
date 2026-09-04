@@ -1,6 +1,6 @@
 ---
 name: GCP云架构
-description: "Design GCP architectures for startups and enterprises. Use when asked to design Google Cloud infrastructure, deploy to GKE or Cloud Run, configure BigQuery pipelines, optimize GCP costs, or migrate to GCP. Covers Cloud Run, GKE, Cloud Functions, Cloud SQL, BigQuery, and cost optimization."
+description: "GCP 云架构设计：服务选型、成本、运维。当用户要求 Google Cloud 架构方案时使用。"
 ---
 
 # GCP Cloud Architect

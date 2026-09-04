@@ -1,6 +1,6 @@
 ---
 name: 代码导览
-description: "Use when the user asks to create a CodeTour .tour file — persona-targeted, step-by-step walkthroughs that link to real files and line numbers. Trigger for: create a tour, onboarding tour, architecture tour, PR review tour, explain how X works, vibe check, RCA tour, contributor guide, or any structured code walkthrough request."
+description: "为代码库生成'代码导览'：按模块讲解核心结构、数据流、关键文件。当用户要求讲解/带看一个代码库时使用。"
 ---
 
 # Code Tour

@@ -1,6 +1,6 @@
 ---
 name: 通用爬虫架构
-description: "Use for web scraping, crawling, document extraction, API parsing, or building validation-heavy data pipelines using Firecrawl or local Python scripts."
+description: "设计稳健的网页抓取架构：反爬、限流、解析、数据清洗。当用户要求构建爬虫/数据采集时使用。"
 ---
 
 # Universal Scraping Architect

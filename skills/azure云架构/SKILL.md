@@ -1,6 +1,6 @@
 ---
 name: Azure云架构
-description: "Design Azure architectures for startups and enterprises. Use when asked to design Azure infrastructure, create Bicep/ARM templates, optimize Azure costs, set up Azure DevOps pipelines, or migrate to Azure. Covers AKS, App Service, Azure Functions, Cosmos DB, and cost optimization."
+description: "Azure 云架构设计：服务选型、网络、安全。当用户要求 Azure 架构方案时使用。"
 ---
 
 # Azure Cloud Architect

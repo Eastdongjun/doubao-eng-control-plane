@@ -1,6 +1,6 @@
 ---
 name: PR审查专家
-description: "Use when the user asks to review pull requests, analyze code changes, check for security issues in PRs, or assess code quality of diffs."
+description: "以资深评审视角审查 PR：正确性、风格、安全、性能、测试覆盖。当用户要求评审合并请求时使用。"
 ---
 
 # PR Review Expert

@@ -1,9 +1,6 @@
 ---
 name: Playwright迁移
 description: "把现有测试迁移到 Playwright。当用户要求迁移测试框架时使用。"
-  Migrate from Cypress or Selenium to Playwright. Use when user mentions
-  "cypress", "selenium", "migrate tests", "convert tests", "switch to
-  playwright", "move from cypress", or "replace selenium".
 ---
 
 # Migrate to Playwright

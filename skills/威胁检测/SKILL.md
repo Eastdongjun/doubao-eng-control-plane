@@ -1,6 +1,6 @@
 ---
 name: 威胁检测
-description: "Use when hunting for threats in an environment, analyzing IOCs, or detecting behavioral anomalies in telemetry. Covers hypothesis-driven threat hunting, IOC sweep generation, z-score anomaly detection, and MITRE ATT&CK-mapped signal prioritization."
+description: "威胁检测与安全监控：日志、告警、响应。当用户要求安全监控方案时使用。"
 ---
 
 # Threat Detection
