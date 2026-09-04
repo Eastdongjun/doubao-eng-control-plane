@@ -1,0 +1,25 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WebQA 网页测试报告</title></head>
+<body style="margin:0;padding:20px;background:#F4F3EE;font-family:'PingFang SC','Roboto','Segoe UI',Arial,sans-serif;color:#1A1B1C">
+  <div style="max-width:860px;margin:0 auto">
+    <div style="padding:16px;border-radius:14px;background:linear-gradient(135deg,rgba(82,196,26,.15),rgba(148,216,195,.3));box-sizing:border-box">
+      <div style="font-size:16px;font-weight:600">WebQA 网页测试报告</div>
+      <div style="font-size:12px;color:#4B5563;margin-top:4px">1/2 页通过 · 总耗时 6831ms · 2026-09-04 12:32:21 </div>
+    </div>
+      <div style="background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:14px;margin:10px 0;box-sizing:border-box">
+        <div style="font-size:14px;font-weight:600">❌ 百度首页 <span style="color:#6B7280;font-weight:400;font-size:12px">加载 6141ms</span></div>
+        <div style="font-size:11px;color:#6B7280">https://www.baidu.com</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">
+          <tr style="background:#f4f3ee"><th style="text-align:left;padding:4px 6px">结果</th><th style="text-align:left">断言</th><th style="text-align:left">说明</th><th style="text-align:right">耗时</th></tr><tr><td>✅</td><td style='white-space:nowrap'>title_contains</td><td>标题含'百度' 实际='百度一下，你就知道'</td><td style='text-align:right'>5ms</td></tr><tr><td>✅</td><td style='white-space:nowrap'>element_exists</td><td>元素 #su 存在</td><td style='text-align:right'>2ms</td></tr><tr><td>❌</td><td style='white-space:nowrap'>visible</td><td>#su 不可见</td><td style='text-align:right'>7ms</td></tr><tr><td>✅</td><td style='white-space:nowrap'>element_count</td><td>a 数量=69 ≥10</td><td style='text-align:right'>21ms</td></tr>
+        </table><div style='font-size:11px;color:#B45309;margin-top:6px'>⚠ console: ['[等待超时] 选择器 #su 未出现']</div><div style='font-size:11px;color:#DC2626;margin-top:2px'>⚠ 网络: ['NETERR https://psstatic.cdn.bcebos.com/basics/chat/afx%202_1750155358000.mp4']</div><img src="shot-1-百度首页.png" style="max-width:100%;border:1px solid #ddd;border-radius:8px;margin-top:8px">
+      </div>
+      <div style="background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:14px;margin:10px 0;box-sizing:border-box">
+        <div style="font-size:14px;font-weight:600">✅ example.com <span style="color:#6B7280;font-weight:400;font-size:12px">加载 1080ms</span></div>
+        <div style="font-size:11px;color:#6B7280">https://example.com</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">
+          <tr style="background:#f4f3ee"><th style="text-align:left;padding:4px 6px">结果</th><th style="text-align:left">断言</th><th style="text-align:left">说明</th><th style="text-align:right">耗时</th></tr><tr><td>✅</td><td style='white-space:nowrap'>title_contains</td><td>标题含'Example' 实际='Example Domain'</td><td style='text-align:right'>5ms</td></tr><tr><td>✅</td><td style='white-space:nowrap'>text_contains</td><td>h1 文本含'Example'</td><td style='text-align:right'>9ms</td></tr>
+        </table>
+      </div>
+    <div style="font-size:10px;color:#9CA3AF;text-align:center;margin-top:12px">doubao-eng webqa_engine v2 · 单会话复用提速 + 多维度自动捕获</div>
+  </div>
+</body></html>

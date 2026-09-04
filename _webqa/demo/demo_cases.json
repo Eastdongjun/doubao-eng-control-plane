@@ -1,0 +1,44 @@
+{
+  "urls": [
+    {
+      "name": "首页结构",
+      "url": "file:///Users/donglai/Doubao/chats/2026-09-03/new-chat-6/_webqa/demo/index.html",
+      "wait_selector": "#main-title",
+      "screenshot": true,
+      "asserts": [
+        {
+          "type": "title_contains",
+          "value": "WebQA"
+        },
+        {
+          "type": "element_exists",
+          "selector": "#main-title"
+        },
+        {
+          "type": "text_contains",
+          "selector": "#main-title",
+          "value": "演示"
+        },
+        {
+          "type": "element_count",
+          "selector": "li",
+          "min": 3
+        },
+        {
+          "type": "visible",
+          "selector": ".nav-link"
+        },
+        {
+          "type": "attr",
+          "selector": ".btn",
+          "attr": "class",
+          "value": "btn"
+        },
+        {
+          "type": "status",
+          "value": 200
+        }
+      ]
+    }
+  ]
+}

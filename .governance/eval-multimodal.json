@@ -1,0 +1,103 @@
+{
+  "mode": "selftest",
+  "generated_at": "2026-09-04T11:57:43",
+  "dims": {
+    "代码可执行率": {
+      "total": 3,
+      "pass": 3,
+      "rate": 100.0,
+      "detail": [
+        {
+          "case": "calculator.py",
+          "pass": true,
+          "note": "输出包含期望"
+        },
+        {
+          "case": "logclean.py",
+          "pass": true,
+          "note": "输出包含期望"
+        },
+        {
+          "case": "xian_guide.py",
+          "pass": true,
+          "note": "输出包含期望"
+        }
+      ]
+    },
+    "Excel公式准确性": {
+      "total": 4,
+      "pass": 2,
+      "rate": 50.0,
+      "detail": [
+        {
+          "cell": "C1",
+          "formula": "=SUM(A1:A4)",
+          "pass": true
+        },
+        {
+          "cell": "C2",
+          "formula": "=AVERAGE(A1:A4)",
+          "pass": true
+        },
+        {
+          "cell": "C3",
+          "formula": "=SUM(X99:X100)",
+          "pass": false
+        },
+        {
+          "cell": "C4",
+          "formula": "=#REF!",
+          "pass": false
+        }
+      ]
+    },
+    "PPT结构质量": {
+      "total": 3,
+      "pass": 2,
+      "rate": 66.7,
+      "detail": [
+        {
+          "slide": 1,
+          "title": "(空)",
+          "pass": false
+        },
+        {
+          "slide": 2,
+          "title": "成本结构",
+          "pass": true
+        },
+        {
+          "slide": 3,
+          "title": "增长预测",
+          "pass": true
+        }
+      ]
+    },
+    "网页可运行性": {
+      "total": 2,
+      "pass": 0,
+      "rate": 0.0,
+      "detail": [
+        {
+          "check": "标签闭合",
+          "pass": false
+        },
+        {
+          "check": "本地资源存在",
+          "pass": false
+        }
+      ]
+    },
+    "报告引用可靠性": {
+      "total": 1,
+      "pass": 0,
+      "rate": 0.0,
+      "detail": [
+        {
+          "check": "引用标记闭合且 URL 合法",
+          "pass": false
+        }
+      ]
+    }
+  }
+}

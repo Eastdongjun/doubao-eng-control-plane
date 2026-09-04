@@ -1,0 +1,74 @@
+{
+  "summary": {
+    "total_pages": 2,
+    "passed_pages": 1,
+    "failed_pages": 1,
+    "total_ms": 381,
+    "strict": false,
+    "generated_at": "2026-09-04 12:31:34"
+  },
+  "results": [
+    {
+      "name": "正常页(应全过)",
+      "url": "file:///Users/donglai/Doubao/chats/2026-09-03/new-chat-6/_webqa/selftest/good.html",
+      "asserts": [
+        {
+          "type": "title_contains",
+          "pass": true,
+          "note": "标题含'WebQA' 实际='WebQA 演示站点'",
+          "ms": 4
+        },
+        {
+          "type": "element_exists",
+          "pass": true,
+          "note": "元素 #main-title 存在",
+          "ms": 1
+        },
+        {
+          "type": "element_count",
+          "pass": true,
+          "note": "li 数量=3 ≥3",
+          "ms": 1
+        }
+      ],
+      "console": [],
+      "pageerror": [],
+      "failed_requests": [],
+      "slow_requests": [],
+      "load_ms": 33,
+      "passed": true,
+      "screenshot": null
+    },
+    {
+      "name": "缺陷页(应检出)",
+      "url": "file:///Users/donglai/Doubao/chats/2026-09-03/new-chat-6/_webqa/selftest/bad.html",
+      "asserts": [
+        {
+          "type": "element_exists",
+          "pass": false,
+          "note": "元素 #main-title 不存在",
+          "ms": 4
+        },
+        {
+          "type": "attr",
+          "pass": false,
+          "note": "元素 .btn 不存在",
+          "ms": 1
+        },
+        {
+          "type": "element_count",
+          "pass": false,
+          "note": "li 数量=3 <5",
+          "ms": 1
+        }
+      ],
+      "console": [],
+      "pageerror": [],
+      "failed_requests": [],
+      "slow_requests": [],
+      "load_ms": 30,
+      "passed": false,
+      "screenshot": "shot-2-缺陷页应检出.png"
+    }
+  ]
+}

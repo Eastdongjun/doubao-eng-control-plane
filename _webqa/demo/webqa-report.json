@@ -1,0 +1,67 @@
+{
+  "summary": {
+    "total_pages": 1,
+    "passed_pages": 1,
+    "failed_pages": 0,
+    "total_ms": 300,
+    "strict": false,
+    "generated_at": "2026-09-04 12:31:48"
+  },
+  "results": [
+    {
+      "name": "首页结构",
+      "url": "file:///Users/donglai/Doubao/chats/2026-09-03/new-chat-6/_webqa/demo/index.html",
+      "asserts": [
+        {
+          "type": "title_contains",
+          "pass": true,
+          "note": "标题含'WebQA' 实际='WebQA 演示站点'",
+          "ms": 4
+        },
+        {
+          "type": "element_exists",
+          "pass": true,
+          "note": "元素 #main-title 存在",
+          "ms": 1
+        },
+        {
+          "type": "text_contains",
+          "pass": true,
+          "note": "#main-title 文本含'演示'",
+          "ms": 1
+        },
+        {
+          "type": "element_count",
+          "pass": true,
+          "note": "li 数量=3 ≥3",
+          "ms": 1
+        },
+        {
+          "type": "visible",
+          "pass": true,
+          "note": ".nav-link 可见",
+          "ms": 2
+        },
+        {
+          "type": "attr",
+          "pass": true,
+          "note": ".btn[class]='btn'",
+          "ms": 2
+        },
+        {
+          "type": "status",
+          "pass": true,
+          "note": "状态码=200",
+          "ms": 0
+        }
+      ],
+      "console": [],
+      "pageerror": [],
+      "failed_requests": [],
+      "slow_requests": [],
+      "load_ms": 33,
+      "passed": true,
+      "screenshot": "shot-1-首页结构.png"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "urls": [
+    {
+      "name": "正常页(应全过)",
+      "url": "file:///Users/donglai/Doubao/chats/2026-09-03/new-chat-6/_webqa/selftest/good.html",
+      "wait_selector": "#main-title",
+      "asserts": [
+        {
+          "type": "title_contains",
+          "value": "WebQA"
+        },
+        {
+          "type": "element_exists",
+          "selector": "#main-title"
+        },
+        {
+          "type": "element_count",
+          "selector": "li",
+          "min": 3
+        }
+      ]
+    },
+    {
+      "name": "缺陷页(应检出)",
+      "url": "file:///Users/donglai/Doubao/chats/2026-09-03/new-chat-6/_webqa/selftest/bad.html",
+      "wait_selector": "#main-title-moved",
+      "asserts": [
+        {
+          "type": "element_exists",
+          "selector": "#main-title"
+        },
+        {
+          "type": "attr",
+          "selector": ".btn",
+          "attr": "class",
+          "value": "btn"
+        },
+        {
+          "type": "element_count",
+          "selector": "li",
+          "min": 5
+        }
+      ]
+    }
+  ]
+}
