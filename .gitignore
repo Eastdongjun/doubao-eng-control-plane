@@ -17,3 +17,5 @@ monitor/*.log
 !governance-demo/.governance/capability_registry.json
 .governance/trace.jsonl
 .governance/eval-vertical.json
+_eval_samples/
+_replay/
