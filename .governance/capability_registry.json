@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "2.0",
-    "generated_at": "2026-09-04T16:26:23",
+    "generated_at": "2026-09-04T17:05:50",
     "schema": "skill/工具统一注册：id/type/name/description/destructive/failure_mode/cost/status/stage/group/routing",
     "source": "/Users/donglai/Library/Application Support/Doubao/Default/.doubao/agent_mode/workspace/.user_skills",
     "total": 190
@@ -12,7 +12,7 @@
       "id": "SonarQube适配器",
       "type": "skill",
       "name": "SonarQube适配器",
-      "description": "把 SonarQube 规则固化为 AI 写代码的硬门禁闭环（写前约束→写后自动检查→自动优化循环→提交阻断→修复手册）。当 AI 新增/修改任何代码文件、写完代码准备宣称完成、或准备 git 提交时，必须按本技能执行 SonarQube 门禁；涉及 S1192/S3776/S8688/S1172/S1168/S6204/S3358/S107 等规则问题时使用本技能修复。也用于\"归零/无报错/无问题\"验收（SonarQube 视角）。",
+      "description": "把 SonarQube 规则固化为 AI 写代码的硬门禁闭环（VSCode AI Sonar Guard：写前预检→写前约束→写后自动检查→自动优化循环→提交阻断→修复手册）。当 AI 新增/修改任何代码文件、写完代码准备宣称完成、或准备 git 提交时，必须按本技能执行 SonarQube 门禁；涉及 S1192/S3776/S8688/S1172/S1168/S6204/S3358/S107 等规则问题时使用本技能修复。也用于\"归零/无报错/无问题\"验收（SonarQube 视角）。",
       "destructive": false,
       "failure_mode": "执行失败需检查产物",
       "cost": "M",

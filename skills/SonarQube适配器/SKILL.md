@@ -1,11 +1,24 @@
 ---
 name: SonarQube适配器
-description: 把 SonarQube 规则固化为 AI 写代码的硬门禁闭环（写前约束→写后自动检查→自动优化循环→提交阻断→修复手册）。当 AI 新增/修改任何代码文件、写完代码准备宣称完成、或准备 git 提交时，必须按本技能执行 SonarQube 门禁；涉及 S1192/S3776/S8688/S1172/S1168/S6204/S3358/S107 等规则问题时使用本技能修复。也用于"归零/无报错/无问题"验收（SonarQube 视角）。
+description: 把 SonarQube 规则固化为 AI 写代码的硬门禁闭环（VSCode AI Sonar Guard：写前预检→写前约束→写后自动检查→自动优化循环→提交阻断→修复手册）。当 AI 新增/修改任何代码文件、写完代码准备宣称完成、或准备 git 提交时，必须按本技能执行 SonarQube 门禁；涉及 S1192/S3776/S8688/S1172/S1168/S6204/S3358/S107 等规则问题时使用本技能修复。也用于"归零/无报错/无问题"验收（SonarQube 视角）。
 ---
 
-# SonarQube 硬门禁（写代码的五层闭环）
+# SonarQube 硬门禁（VSCode AI Sonar Guard 六层闭环）
 
-SonarQube 不是"提示词说一下"，而是**写码流程里的硬门禁**。AI 写任何代码都要走完这五层，缺一层都不算完成。
+SonarQube 不是"提示词说一下"，而是**写码流程里的硬门禁**。AI 写任何代码都要走完六层，缺一层都不算完成。
+
+**规则手册**：`governance-demo/sonar-rules.md`（主仓库）与项目根 `SONAR-RULES.md`——所有 agent 写代码前必读，按规则号固化修复 adapter。
+
+## 第 0 层：写前预检（先看雷区再动手）
+
+修改目标文件前，先跑：
+
+```
+MCP:  engineering_sonar_plan  <项目根> <目标文件>
+CLI:  python3 governance-demo/engineering.py sonar-plan <项目根> <目标文件>
+```
+
+输出：目标文件**现有问题**（按规则汇总）+ **本次写代码必须避免新增的模式**（无参 now()/return null 集合/嵌套三元/重复字符串/Collectors.toList/复杂度膨胀）+ 对应修复 adapter 指引。AI 还没写，就知道这个文件的雷区。
 
 ## 第 1 层：写前约束（固定规则，先读再写）
 
@@ -22,7 +35,15 @@ SonarQube 不是"提示词说一下"，而是**写码流程里的硬门禁**。A
 | 泛型转换要收口 | 避免 unchecked cast；必须转换时用类型安全方式并集中收口 |
 | 不用 NOSONAR 逃避 | 除非有明确误报说明并写入豁免文件，否则禁止 NOSONAR 注释 |
 
-## 第 2 层：写后自动检查（Problems ≠ 0 就不能说完成）
+## 第 2 层：写入约束（VSCode 写入桥，写完即检）
+
+写代码**必须**走 VSCode-MCP 写入通道（`dev_write_file` / `dev_edit_file` / `dev_typewrite`）——写入动作本身带 Sonar 闭环：
+
+- 写入工具返回内容**自动附带该文件 Sonar 检查结果**（`🟢 0 problems` 或 `🔴 N 个问题` 清单）。
+- 写完立刻看到文件状态，不需要等全仓扫描。
+- 若返回 `🔴`，按问题清单当场修，直到该文件 `🟢`。
+
+## 第 3 层：写后自动检查（Problems ≠ 0 就不能说完成）
 
 **每次写完文件，立即运行**（优先 MCP 工具，次选 CLI）：
 
@@ -34,7 +55,7 @@ CLI:  python3 governance-demo/engineering.py problems <项目根>
 - 返回 problems 列表（SonarQube 风格：`S8688[ERROR]: ... (src/X.java:9)`）。
 - **只要 problems 非 0（尤其 ERROR>0 或未豁免 WARNING>0），就不能宣称"完成/可提交"**。
 
-## 第 3 层：自动优化循环（improve → 读 state → 修 → 重跑 → PASS）
+## 第 4 层：自动优化循环（improve → 读 state → 修 → 重跑 → PASS）
 
 Problems 非 0 时进入优化循环：
 
@@ -44,17 +65,19 @@ CLI:  python3 governance-demo/engineering.py improve <项目根>
 ```
 
 - 工具把剩余问题写入 `<项目根>/.ai/evidence/improve-state.json`。
-- **AI 必须读取该文件**，按 `diagnostics` 数组逐条修复（每条含 rule/severity/message/file/line/suggestion）。
+- **AI 必须读取该文件**，按 `diagnostics` 数组逐条修复（每条含 rule/severity/message/file/line/suggestion/**adapter**——adapter 是 sonar-rules.md 固化的修复指引）。
 - 修完**重跑 engineering_problems**，直到 0 problems（status=PASS）。
 - 循环上限：同批问题最多 10 轮；超限如实上报剩余问题与原因，不得伪造 PASS。
 
-## 第 4 层：提交前阻断（git hook）
+## 第 5 层：提交前阻断（git hook）
 
 `engineering install-hook <仓库>` 安装 pre-commit hook 后，git 提交被硬性拦截：
 
 - SonarQube **Error > 0** → 禁止 commit（exit 1）
 - **未豁免 Warning > 0** → 禁止 commit（exit 1）
-- **桥不可用**（engineering.py 缺失）→ 禁止 commit 或标记 BLOCKED
+- **AI Gate（VSCode-MCP :8848）不在线** → 禁止 commit（提示启动命令）
+- **桥不可用**（engineering.py 缺失）/ **采集失败** → 禁止 commit
+- 确需绕过的场景：`SKIP_SONAR_GATE=1 git commit ...`（仅限例外，正常流程禁用）
 
 豁免：对确实合理的问题，写 `<项目根>/.ai/evidence/exemptions.json`：
 
@@ -64,7 +87,9 @@ CLI:  python3 governance-demo/engineering.py improve <项目根>
 
 豁免必须写明原因（人工评审可追溯），不允许无理由批量豁免。
 
-## 第 5 层：修复手册（常见规则 → adapter 指南）
+## 第 6 层：修复手册（常见规则 → adapter 指南）
+
+> 完整版见 `governance-demo/sonar-rules.md`；`engineering improve` 的 diagnostics 已内联 adapter 字段。
 
 | 规则 | 问题 | 修法 | 示例 |
 |---|---|---|---|
