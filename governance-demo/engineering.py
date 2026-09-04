@@ -237,8 +237,12 @@ class TextChecker:
             pat = re.compile(r"['\"]((?:[^'\"\\]|\\.){3,80})['\"]")
         for m in pat.finditer(code):
             v = m.group(1)
+            if "\n" in v or "\r" in v: continue  # 跨行字符串/文本块不视为魔法字符串
             if v.isdigit() or v.startswith(("http", "/", ".")): continue
             if v in STD_LITERALS: continue
+            # 跳过 map/get 调用 key 上下文：xxx("key") 或 xxx("key", ...) —— 字典键不视为魔法字符串
+            if re.search(r"\b(?:get|put|set|remove|containsKey|getOrDefault|computeIfAbsent|getProperty|setProperty|setAttribute|getAttribute)\s*\(\s*['\"]?$", code[max(0, m.start() - 60):m.start()]):
+                continue
             self.dup_counter.setdefault(v, []).append((f, code[:m.start()].count("\n") + 1))
     def _dup_report(self):
         for v, locs in self.dup_counter.items():
