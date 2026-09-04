@@ -23,6 +23,7 @@ import asyncio
 import json
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -317,6 +318,49 @@ async def dev_run_command(command: str, cwd: str = ".", timeout: int = 60) -> st
         return f"错误: 命令不存在: {command}"
     except Exception as e:
         return _fmt_err(e)
+
+
+# ---------- SonarQube 硬门禁（engineering 桥） ----------
+_ENGINEERING = str(Path(__file__).resolve().parent.parent / "governance-demo" / "engineering.py")
+
+
+async def _run_engineering(args: list, cwd: str) -> str:
+    """运行 engineering CLI 并返回结构化结果"""
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable, _ENGINEERING, *args,
+        cwd=cwd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    try:
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+    except asyncio.TimeoutError:
+        proc.kill()
+        return json.dumps({"exit_code": -1, "stdout": "", "stderr": "engineering 超时（>120s）"}, ensure_ascii=False)
+    return json.dumps({
+        "exit_code": proc.returncode,
+        "stdout": stdout.decode("utf-8", errors="replace")[-6000:],
+        "stderr": stderr.decode("utf-8", errors="replace")[-2000:],
+    }, ensure_ascii=False, indent=2)
+
+
+@mcp.tool(
+    name="engineering_problems",
+    description="SonarQube 硬门禁检查：对项目根目录跑规则检查（S1192重复串/S3776复杂度/S8688时区/S1172未用参数/S1168 null集合/S6204 toList/S3358嵌套三元/S107参数过多 等），返回 problems 列表。AI 写完代码后必须立即调用本工具；只要 problems 非 0 就不能宣称完成。",
+)
+async def engineering_problems(path: str) -> str:
+    cwd_p = _resolve(path)
+    if not cwd_p.is_dir():
+        return json.dumps({"exit_code": 2, "stdout": "", "stderr": f"项目根不存在: {path}"}, ensure_ascii=False)
+    return await _run_engineering(["problems", str(cwd_p), "--json"], cwd=str(cwd_p.parent))
+
+
+@mcp.tool(
+    name="engineering_improve",
+    description="SonarQube 自动优化循环：对项目根跑检查并把剩余问题写入 <root>/.ai/evidence/improve-state.json（含 rule/message/suggestion）。AI 必须读取该文件按 diagnostics 逐条修复，修完重跑 engineering_problems 直到 0 problems（PASS）。",
+)
+async def engineering_improve(path: str) -> str:
+    cwd_p = _resolve(path)
+    if not cwd_p.is_dir():
+        return json.dumps({"exit_code": 2, "stdout": "", "stderr": f"项目根不存在: {path}"}, ensure_ascii=False)
+    return await _run_engineering(["improve", str(cwd_p)], cwd=str(cwd_p.parent))
 
 
 if __name__ == "__main__":
