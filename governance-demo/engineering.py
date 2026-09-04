@@ -21,6 +21,19 @@ SEV_ERROR, SEV_WARNING = "ERROR", "WARNING"
 DEFAULT_COMPLEXITY = 15
 DEFAULT_PARAMS = 7
 DEFAULT_DUP = 3
+# 规则修复适配器（sonar-rules.md 固化，供 sonar-plan / improve 输出给 AI）
+ADAPTERS = {
+    "S1192": "提 private static final String 常量（业务含义命名，如 MSG_PHONE_EMPTY）；map key/注解元数据/标准值/测试数据不在此列",
+    "S3776": "拆小方法：条件分支、循环体、校验逻辑、组装逻辑各拆一个职责方法，命名表达职责",
+    "S8688": "now() 必须传时区：LocalDate.now(ZoneId.of(\"Asia/Shanghai\"))；Python datetime.now(timezone.utc)；禁止无参",
+    "S1168": "List→Collections.emptyList() / Map→emptyMap() / Set→emptySet()；Python 返回 []/{} 而非 None",
+    "S1172": "私有方法直接删参数；公共接口查调用链，不能删时加注释说明，不破坏接口契约",
+    "S6204": "stream.collect(Collectors.toList())→stream.toList()（JDK16+，确认调用方不依赖可变性），清理 Collectors import",
+    "S3358": "拆 if/else 或中间变量；TS 的 key?: 可选属性不是三元，勿误改",
+    "S107": "封装参数对象（request/query DTO）或拆职责；对外服务签名属独立重构专项可豁免+列技术债",
+    "S1128": "删除未使用 import；删除前全仓搜索确认无引用",
+    "S9999": "修复语法错误（Python py_compile / JS node --check / 编译构建）",
+}
 # 标准参数值/协议词：重复出现不视为魔法字符串（编码、模式、HTTP 动词、常用格式名等）
 STD_LITERALS = {
     "utf-8", "utf8", "ascii", "latin-1", "gbk", "utf-16", "__main__",
@@ -378,6 +391,10 @@ def cmd_problems(args):
     if not root.exists():
         print(f"✗ 项目根不存在: {root}"); return 2
     problems = run_checks(root)
+    if args.file:
+        # 单文件快速检查：仅报告目标文件（供 MCP 写后即时反馈 / 写前预检）
+        target = str((root / args.file).resolve()) if not pathlib.Path(args.file).is_absolute() else args.file
+        problems = [p for p in problems if p.file == args.file or str((root / p.file).resolve()) == target]
     if args.json:
         print(json.dumps({"problems_count": len(problems), "problems": [p.to_dict() for p in problems]},
                          ensure_ascii=False, indent=2))
@@ -394,6 +411,51 @@ def cmd_problems(args):
           f"{'✗ 存在未豁免 WARNING，禁止提交' if c['WARNING'] else ''}")
     return 1
 
+def cmd_sonar_plan(args):
+    """写前预检：列出目标文件的现有 Sonar 问题 + 本次写代码禁止新增的模式 + 修复指引。
+    用法: engineering sonar-plan <项目根> <目标文件>"""
+    root = pathlib.Path(args.root)
+    if not root.exists():
+        print(f"✗ 项目根不存在: {root}"); return 2
+    target = pathlib.Path(args.file)
+    target_abs = target.resolve() if target.is_absolute() else (root / target).resolve()
+    try:
+        rel = target_abs.relative_to(root.resolve())
+    except ValueError:
+        print(f"✗ 目标文件不在项目根内: {target}"); return 2
+    if not target_abs.is_file():
+        print(f"✗ 目标文件不存在: {target_abs}"); return 2
+    problems = run_checks(root)
+    mine = [p for p in problems if str((root / p.file).resolve()) == str(target_abs)]
+    lang = target_abs.suffix.lstrip(".")
+    c = count_by_sev(mine)
+    print(f"📍 Sonar 写前预检 · {rel}")
+    print(f"  当前文件已有问题: {len(mine)} 个 (ERROR={c['ERROR']}, WARNING={c['WARNING']})")
+    if not mine:
+        print("  ✓ 该文件当前 0 problems")
+    for r in sorted({p.rule for p in mine}):
+        locs = [p.line for p in mine if p.rule == r]
+        print(f"    - {r}: {len(locs)} 个 (行 {locs[:8]}{'…' if len(locs)>8 else ''})")
+    print(f"  本次写代码必须避免新增:")
+    if lang in ("java",):
+        forb = ["无参 now()（S8688）", "return null 集合/Map（S1168）", "嵌套三元（S3358）", "重复字符串 ≥3 次（S1192）",
+                "Collectors.toList()（S6204）", "方法继续膨胀超 15 复杂度（S3776）", "未使用 import（S1128）"]
+    elif lang in ("py", "python"):
+        forb = ["datetime.now() 无参（S8688）", "return None 代替空集合（S1168）", "嵌套三元（S3358）",
+                "重复字符串 ≥3 次（S1192）", "方法继续膨胀超 15 复杂度（S3776）", "未使用 import（S1128）"]
+    else:
+        forb = ["无参 now()（S8688）", "重复字符串 ≥3 次（S1192）", "嵌套三元（S3358）", "方法继续膨胀超 15 复杂度（S3776）"]
+    for f in forb:
+        print(f"    ✗ {f}")
+    if mine:
+        print(f"  修复指引（对应 adapter，详见 sonar-rules.md）:")
+        seen = set()
+        for p in mine:
+            if p.rule in seen: continue
+            seen.add(p.rule)
+            print(f"    - {p.rule}: {ADAPTERS.get(p.rule, '按规则修复')}")
+    return 0
+
 def cmd_improve(args):
     root = pathlib.Path(args.root)
     if not root.exists():
@@ -406,7 +468,7 @@ def cmd_improve(args):
         "project": str(root),
         "problems_count": len(problems),
         "status": "PASS" if not problems else "NEEDS_WORK",
-        "diagnostics": [p.to_dict() for p in problems],
+        "diagnostics": [{**p.to_dict(), "adapter": ADAPTERS.get(p.rule, "按规则修复，详见 sonar-rules.md")} for p in problems],
         "next_action": "修复全部 diagnostics 后重新运行 problems，直到 0 problems。" if problems else "已达标，可进入提交。",
     }
     out = ev / "improve-state.json"
@@ -458,11 +520,20 @@ def cmd_install_hook(args):
     hook = hooks / "pre-commit"
     script = f"""#!/bin/sh
 # SonarQube 硬门禁 pre-commit hook（由 engineering install-hook 生成）
-# 阻断规则: Error>0 / 未豁免 Warning>0 / 桥不可用 → 禁止 commit（仅检查本次暂存代码，增量）
+# 阻断规则: Error>0 / 未豁免 Warning>0 / AI Gate 离线 / 采集失败 → 禁止 commit
+# 逃生开关: SKIP_SONAR_GATE=1 git commit ...（仅限确需绕过的场景）
+[ -n "$SKIP_SONAR_GATE" ] && exit 0
 ENG="{pathlib.Path(__file__).resolve()}"
 ROOT="{repo.resolve()}"
+GATE_URL="http://127.0.0.1:8848/mcp"
 if [ ! -f "$ENG" ]; then
   echo "🔴 BLOCKED: engineering 桥不可用（$ENG 缺失），禁止提交。请先恢复工程化工具链。"
+  exit 1
+fi
+if ! curl -s -m 2 -o /dev/null "$GATE_URL" 2>/dev/null; then
+  echo "🔴 BLOCKED: AI Gate（VSCode-MCP :8848）不在线，禁止提交。"
+  echo "  请启动: cd $(dirname "$ENG")/../vscode-mcp && .venv/bin/python server.py"
+  echo "  或确需绕过时: SKIP_SONAR_GATE=1 git commit ..."
   exit 1
 fi
 "${{PYTHON:-python3}}" "$ENG" hook "$ROOT" --staged || exit 1
@@ -476,10 +547,11 @@ exit 0
 def main():
     p = argparse.ArgumentParser(description="SonarQube 硬门禁适配器")
     sub = p.add_subparsers(dest="cmd", required=True)
-    s1 = sub.add_parser("problems"); s1.add_argument("root"); s1.add_argument("--json", action="store_true"); s1.set_defaults(fn=cmd_problems)
+    s1 = sub.add_parser("problems"); s1.add_argument("root"); s1.add_argument("--json", action="store_true"); s1.add_argument("--file", help="仅报告指定文件（相对 root）"); s1.set_defaults(fn=cmd_problems)
     s2 = sub.add_parser("improve"); s2.add_argument("root"); s2.set_defaults(fn=cmd_improve)
     s3 = sub.add_parser("hook"); s3.add_argument("root"); s3.add_argument("--staged", action="store_true"); s3.set_defaults(fn=cmd_hook)
     s4 = sub.add_parser("install-hook"); s4.add_argument("repo"); s4.set_defaults(fn=cmd_install_hook)
+    s5 = sub.add_parser("sonar-plan"); s5.add_argument("root"); s5.add_argument("file"); s5.set_defaults(fn=cmd_sonar_plan)
     a = p.parse_args()
     sys.exit(a.fn(a) or 0)
 

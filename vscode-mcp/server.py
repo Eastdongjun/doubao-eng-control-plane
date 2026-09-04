@@ -23,6 +23,7 @@ import asyncio
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Optional
@@ -54,6 +55,44 @@ def _resolve(path: str) -> Path:
 def _fmt_err(e: Exception) -> str:
     """统一错误格式，给 Agent 可执行的下一步提示。"""
     return f"错误: {type(e).__name__}: {e}"
+
+
+def _find_git_root(path: Path) -> Optional[Path]:
+    """从文件所在目录向上找第一个含 .git 的项目根（Sonar 检查的项目边界）。"""
+    cur = path.parent if path.is_file() else path
+    for d in [cur, *cur.parents]:
+        if (d / ".git").exists():
+            return d
+    return None
+
+
+def _sonar_check(path: Path) -> str:
+    """写后即时 Sonar 单文件检查：返回目标文件问题状态（0 problems 或问题清单）。
+    基于 engineering problems <root> --json --file <rel>，全仓规则口径（含跨文件 S1192）。"""
+    try:
+        root = _find_git_root(path)
+        if root is None:
+            return ""
+        rel = path.relative_to(root)
+        eng = Path(__file__).resolve().parent.parent / "governance-demo" / "engineering.py"
+        if not eng.exists():
+            return "\n⚠ Sonar 检查跳过（engineering.py 不存在）"
+        r = subprocess.run([sys.executable, str(eng), "problems", str(root), "--json", "--file", str(rel)],
+                           capture_output=True, text=True, timeout=30)
+        if r.returncode not in (0, 1):
+            return f"\n⚠ Sonar 检查失败: {r.stderr.strip()[:120]}"
+        d = json.loads(r.stdout)
+        n = d["problems_count"]
+        if n == 0:
+            return "\n🟢 Sonar 单文件检查: 0 problems ✓"
+        lines = [f"\n🔴 Sonar 检查 {n} 个问题（本文件）:"]
+        for p in d["problems"][:8]:
+            lines.append(f"  {p['rule']} L{p['line']} {p['message'][:60]}")
+        if n > 8:
+            lines.append(f"  … 共 {n} 个（运行 engineering improve 查看全部）")
+        return "\n".join(lines)
+    except Exception as e:
+        return f"\n⚠ Sonar 检查异常: {e}"
 
 
 # ---------------------------------------------------------------------------
@@ -170,7 +209,7 @@ async def dev_write_file(path: str, content: str) -> str:
         p = _resolve(path)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(content, encoding="utf-8")
-        return f"已写入 {p}（{len(content.encode('utf-8'))} 字节）"
+        return f"已写入 {p}（{len(content.encode('utf-8'))} 字节）{_sonar_check(p)}"
     except Exception as e:
         return _fmt_err(e)
 
@@ -198,7 +237,7 @@ async def dev_edit_file(path: str, old_string: str, new_string: str, replace_all
         if count > 1 and not replace_all:
             return f"错误: 匹配到 {count} 处，old_string 不唯一，请加更多上下文或设 replace_all=True"
         p.write_text(text.replace(old_string, new_string), encoding="utf-8")
-        return f"已替换 {count} 处 → {p}"
+        return f"已替换 {count} 处 → {p}{_sonar_check(p)}"
     except Exception as e:
         return _fmt_err(e)
 
@@ -271,7 +310,7 @@ async def dev_typewrite(path: str, content: str, interval_ms: int = 200) -> str:
                 os.fsync(f.fileno())
             if i < total - 1 and iv > 0:
                 await asyncio.sleep(iv / 1000.0)
-        return f"打字机模式完成：{p}（{total} 行，间隔 {iv}ms，共约 {total * iv / 1000:.1f}s）"
+        return f"打字机模式完成：{p}（{total} 行，间隔 {iv}ms，共约 {total * iv / 1000:.1f}s）{_sonar_check(p)}"
     except Exception as e:
         return _fmt_err(e)
 
