@@ -15,3 +15,5 @@ governance-demo/.governance/
 _projects/
 monitor/*.log
 !governance-demo/.governance/capability_registry.json
+.governance/trace.jsonl
+.governance/eval-vertical.json
