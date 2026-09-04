@@ -1,0 +1,14 @@
+schema_version: '2.0'
+authority: binding-system
+owner: design-system-owner
+effective_date: '2026-08-28'
+source_of_truth:
+  - path: tokens.json
+    version: '1.0.0'
+    authority: binding
+tokens:
+  color: ['#ffffff', '#111111', '#2454ff']
+  spacing: ['4', '8', '12', '16', '24', '32']
+  size: ['12', '14', '16', '20', '24', '32', '48']
+  radius: ['0', '4', '8', '12']
+exceptions: []

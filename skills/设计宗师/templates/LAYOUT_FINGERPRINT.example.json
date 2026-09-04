@@ -1,0 +1,8 @@
+{
+  "schema_version": "2.0",
+  "required_distinct": 2,
+  "candidates": [
+    {"name": "sequential-editorial", "canvas": "single-column", "navigation": "rail", "entry": "headline-first", "information_units": "chapters", "density_curve": "release-and-peak", "mobile_transform": "preserve-sequence"},
+    {"name": "decision-dashboard", "canvas": "split-workspace", "navigation": "top-tabs", "entry": "task-first", "information_units": "queues", "density_curve": "constant-dense", "mobile_transform": "prioritize-task"}
+  ]
+}

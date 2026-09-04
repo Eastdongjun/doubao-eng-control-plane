@@ -1,0 +1,20 @@
+schema_version: '2.0'
+intent: 'For the target audience, make the primary task feel confident and clear without decorative noise.'
+authority: research-derived
+research_status: unproven
+required_lanes: [lineage, category, adjacency, counter-reference]
+weights:
+  business_fit: 0.22
+  audience_fit: 0.14
+  hierarchy: 0.16
+  brand_specificity: 0.12
+  accessibility: 0.12
+  feasibility: 0.10
+  distinctiveness: 0.08
+  trend_half_life: 0.06
+candidates:
+  - name: direction-a
+    gates: {business_fit: true, hierarchy: true, accessibility: true}
+    scores: {business_fit: 4, audience_fit: 4, hierarchy: 5, brand_specificity: 3, accessibility: 4, feasibility: 4, distinctiveness: 3, trend_half_life: 4}
+    confidence: medium
+    rejection_reason: ''

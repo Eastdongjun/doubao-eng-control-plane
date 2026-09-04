@@ -1,0 +1,65 @@
+{
+  "skill": "interaction-design-expert",
+  "version": 1,
+  "cases": [
+    {
+      "id": "approval-flow",
+      "prompt": "为采购审批设计完整交互，覆盖多人会签、驳回、撤回、超时、代理审批和并发修改。",
+      "should_trigger": true,
+      "expected": [
+        "明确角色、权限、对象生命周期与决策规则",
+        "覆盖主路径、替代路径、中断、失败和恢复",
+        "输出状态矩阵或行为契约",
+        "包含通知、审计、无障碍与验收"
+      ]
+    },
+    {
+      "id": "existing-system",
+      "prompt": "在现有组件库和 4 倍数间距体系下增加批量编辑，不得改 Design Token。",
+      "should_trigger": true,
+      "expected": [
+        "先锁定既有系统权威",
+        "遵循 reuse 到 authorized change 的阶梯",
+        "不引入任意间距或全局行为",
+        "记录必要例外但不擅自实施"
+      ]
+    },
+    {
+      "id": "gesture-accessibility",
+      "prompt": "为移动端卡片左滑删除设计交互。",
+      "should_trigger": true,
+      "expected": [
+        "说明发现性、阈值、预览、取消、提交和撤销",
+        "提供按钮或键盘等非手势替代",
+        "考虑系统手势冲突与错误后果"
+      ]
+    },
+    {
+      "id": "form-audit",
+      "prompt": "用户总在开户表单最后一步退出，帮我诊断。",
+      "should_trigger": true,
+      "expected": [
+        "区分观察、推断和待验证假设",
+        "分析认知、信任、信息需求、失败与保存状态",
+        "提出能改变决策的研究或证据"
+      ]
+    },
+    {
+      "id": "static-brand-only",
+      "prompt": "只为品牌海报选择两种字体和印刷色。",
+      "should_trigger": false,
+      "expected": [
+        "不把纯静态视觉任务强行扩展成交互蓝图"
+      ]
+    },
+    {
+      "id": "happy-path-resistance",
+      "prompt": "只画三张快乐路径页面，错误以后再说。",
+      "should_trigger": true,
+      "expected": [
+        "不接受高风险状态被无依据延后",
+        "按风险给出最小但完整的状态范围"
+      ]
+    }
+  ]
+}

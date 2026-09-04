@@ -1,0 +1,42 @@
+{
+  "schema_version": "2.0",
+  "status": "authorization_required",
+  "authorization_required": true,
+  "authorization_id": "install:node-package:playwright",
+  "dependency": {
+    "id": "playwright",
+    "name": "Playwright for Node.js",
+    "kind": "node-package"
+  },
+  "blocked_capability": "Automated responsive boundary geometry audit",
+  "purpose": "Open the artifact in a real browser and measure safe areas, clipping, overflow, and scroll endpoints.",
+  "environment": {
+    "os": "Windows",
+    "architecture": "AMD64"
+  },
+  "installation_options": [
+    {
+      "scope": "skill-local",
+      "target": "<absolute-skill-path>",
+      "command": "npm install --prefix \"<absolute-skill-path>\" --no-save --no-package-lock playwright",
+      "changes": "Creates a local node_modules directory without changing package manifests.",
+      "recommended": true
+    }
+  ],
+  "impact": [
+    "Requires a network download from the configured npm registry.",
+    "Consumes local disk space and may run npm lifecycle scripts."
+  ],
+  "fallback": {
+    "available": true,
+    "quality_loss": "Manual inspection cannot prove computed browser geometry with the same repeatability.",
+    "requires_user_choice": true
+  },
+  "next_action": "ask_user_before_install",
+  "user_prompt": "缺少 Playwright for Node.js，因此无法完成自动响应式边界几何审查。是否授权我按上述范围安装依赖并在安装后重新执行验证？",
+  "rules": [
+    "Do not install before explicit user authorization.",
+    "Do not report the blocked capability as passed.",
+    "Use the fallback only after the user declines or defers installation."
+  ]
+}

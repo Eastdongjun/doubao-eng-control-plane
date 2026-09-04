@@ -1,0 +1,64 @@
+schema_version: '1.0'
+project:
+  name: design-grandmaster
+  default_context: core
+  source_roots: ['.']
+  generated_paths: ['**/dist/**', '**/__pycache__/**']
+  vendor_paths: ['**/node_modules/**']
+  active_profiles: [agent-contracts, python, markdown]
+authority:
+  owners: [unassigned]
+  protected_paths: [SKILL.md, references/**, scripts/**, platforms/**]
+  binding_changes_require:
+    decision_record: true
+    named_approver: true
+contexts:
+  core:
+    definition: Canonical design skill contract, references, templates, scripts and platform adapters.
+    owner: unassigned
+    terms:
+      capability_route:
+        definition: Machine-readable selection of required and conditional design capabilities for one task batch.
+        kind: contract
+        status: proposed
+        owner: unassigned
+        locked: false
+        aliases: {allowed: [], forbidden: []}
+        mappings: {python: scripts/capability_router.py, markdown: references/execution-contracts.md}
+        evidence: [SKILL.md]
+      evidence_status:
+        definition: Lifecycle state indicating whether a design decision is evidenced, approved or shipped.
+        kind: state
+        status: proposed
+        owner: unassigned
+        locked: false
+        aliases: {allowed: [], forbidden: [done_without_proof]}
+        mappings: {python: scripts/design_gate.py, markdown: references/execution-contracts.md}
+        evidence: [SKILL.md]
+      dependency_authorization:
+        definition: Machine-readable pause contract for a missing environment capability that requires user-approved mutation or enablement.
+        kind: contract
+        status: proposed
+        owner: unassigned
+        locked: false
+        aliases: {allowed: [authorization_required], forbidden: [silent_install, silent_fallback]}
+        mappings: {python: scripts/dependency_contract.py, markdown: references/dependency-authorization.md}
+        evidence: [SKILL.md, templates/DEPENDENCY_AUTHORIZATION.example.json]
+path_overrides:
+  - glob: '**/*'
+    contexts: [core]
+    profiles: []
+naming:
+  global:
+    forbidden_patterns: []
+    boolean_prefixes: [is, has, can, should]
+    allowed_abbreviations: [api, id, url, svg, ux, ui]
+    require_units_for: [duration, size, distance]
+  paths: []
+deprecations: []
+exceptions: []
+governance:
+  changed_only_legacy_is_error: true
+  full_scan_legacy_severity: warning
+  change_records: []
+  discovery_candidates: []

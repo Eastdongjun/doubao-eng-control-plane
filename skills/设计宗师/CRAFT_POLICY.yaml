@@ -1,0 +1,41 @@
+schema_version: '1.0'
+policy:
+  name: design-grandmaster-craft-policy
+  status: proposed
+  owners: [unassigned]
+  reviewed_on: '2026-08-28'
+  code_map: CODE_MAP.yaml
+project:
+  source_roots: ['.']
+  excluded_paths: ['**/node_modules/**', '**/dist/**', '**/__pycache__/**']
+  generated_paths: ['**/dist/**', '**/__pycache__/**']
+  active_profiles: [python, markdown]
+  path_overrides: []
+budgets:
+  file_lines:
+    threshold: 600
+    severity: warning
+    blocking: false
+    rationale: Review trigger only; never truncate the skill or references to satisfy a number.
+  function_lines:
+    threshold: 60
+    severity: warning
+    blocking: false
+    rationale: Review responsibility and reading flow before splitting.
+  parameters:
+    threshold: 6
+    severity: warning
+    blocking: false
+    rationale: Prefer value objects for wide executable contracts.
+rules:
+  todo_without_issue: {severity: error, rationale: Temporary work needs an owner and removal path.}
+  suppression_without_reason: {severity: error, rationale: Suppressions need a narrow documented reason.}
+  disabled_test: {severity: error, rationale: Do not hide unverified behavior.}
+  placeholder: {severity: error, rationale: Do not ship unfinished production scaffolding.}
+  broad_exception: {severity: warning, rationale: Broad catches need an explicit recovery policy.}
+  debug_output: {severity: warning, rationale: Debug output must not become an accidental interface.}
+issue_pattern: '(https?://\S+|#[0-9]+\b|[A-Z][A-Z0-9]+-[0-9]+\b)'
+suppression_reason_pattern: '(because|reason|workaround|compat|issue|https?://|#[0-9]+|[A-Z][A-Z0-9]+-[0-9]+)'
+exceptions: []
+baseline: {mode: new_findings_only, path: .craft/baseline.json}
+native_gates: {fast: [], standard: [], release: []}

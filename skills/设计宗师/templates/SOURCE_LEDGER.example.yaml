@@ -1,0 +1,11 @@
+schema_version: '2.0'
+required_lanes: [lineage, category, counter-reference]
+saturation_test_passed: false
+sources:
+  - lane: category
+    url: https://example.com/reference
+    date: '2026-08-28'
+    type: primary
+    observation: 'Describe what is visibly present.'
+    transferable_mechanism: 'Describe the mechanism that may transfer.'
+    do_not_copy: 'Describe the surface or identity that must not be copied.'

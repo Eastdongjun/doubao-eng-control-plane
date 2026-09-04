@@ -1,0 +1,8 @@
+{
+  "schema_version": "2.0",
+  "resources": [
+    {"id": "primary-heading", "kind": "critical-meaning", "priority": "eager"},
+    {"id": "hero-image", "kind": "narrative-media", "priority": "deferred-visible", "reserved_geometry": "aspect-ratio-box", "failure": "show-tonal-placeholder", "reduced_mode": "omit-image"},
+    {"id": "advanced-chart", "kind": "supporting-data", "priority": "on-intent", "reserved_geometry": "chart-frame", "failure": "retry-inline", "reduced_mode": "table-fallback", "cancel": "cancel-button"}
+  ]
+}

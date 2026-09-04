@@ -1,0 +1,6 @@
+{
+  "schema_version": "2.0",
+  "trends": [
+    {"name": "liquid-glass", "source": "https://example.com/trend", "date": "2026-08-28", "mechanism": "depth through controlled translucency", "project_fit": "only for secondary surfaces", "expiry_risk": "high", "rejected_surface": "not used for primary copy or controls"}
+  ]
+}

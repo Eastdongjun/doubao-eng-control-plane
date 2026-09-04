@@ -1,0 +1,86 @@
+{
+  "skill": "motion-grandmaster",
+  "version": 2,
+  "cases": [
+    {
+      "id": "brand-direction",
+      "prompt": "为一个高端文化品牌网站建立动态视觉方向，先了解我的审美，不要直接套动画。",
+      "should_trigger": true,
+      "expected": [
+        "从具体参考与反例发现审美",
+        "建立 Motion Thesis、审美拨盘和静止规则",
+        "比较机制不同的方向",
+        "使用 Aesthetic Jury 裁决"
+      ]
+    },
+    {
+      "id": "product-restraint",
+      "prompt": "给高频数据后台补动效，希望看起来高级，但不能拖慢操作。",
+      "should_trigger": true,
+      "expected": [
+        "将注意力和时间视为预算",
+        "高频路径保持即时、克制和可中断",
+        "只在层级、因果、状态或少数品牌时刻使用动效"
+      ]
+    },
+    {
+      "id": "trend-research",
+      "prompt": "研究 2026 年的液态玻璃和其他动态视觉潮流，为项目提取可用机制。",
+      "should_trigger": true,
+      "expected": [
+        "实时研究并区分谱系、当前信号和过期风险",
+        "不把液态玻璃当作默认答案",
+        "分析材料、可读性、性能、无障碍和系统转译"
+      ]
+    },
+    {
+      "id": "existing-motion-tokens",
+      "prompt": "现有时长只有 100、160、240、400ms，请为新组件设计动效，不得改 Token。",
+      "should_trigger": true,
+      "expected": [
+        "所有时长映射到批准 Token",
+        "不产生 173、247 等任意值",
+        "必要例外只形成提案，不擅自修改"
+      ]
+    },
+    {
+      "id": "signature-moment",
+      "prompt": "为 AI 首次生成成功设计一个令人记住的时刻。",
+      "should_trigger": true,
+      "expected": [
+        "连接产品意义、对象变化、稳定锚点和品牌人格",
+        "同时设计普通前后状态、重复体验和 reduced motion",
+        "用真实时间原型验证"
+      ]
+    },
+    {
+      "id": "library-routing-with-existing-stack",
+      "prompt": "这是一个已经安装 Motion 并具有 Motion Token 的 React 项目。我要给可排序列表补布局过渡，并给品牌插画做一段自定义 SVG 路径动画。请直接把你内置的动效库都装上。",
+      "should_trigger": true,
+      "expected": [
+        "拒绝一次性安装整套注册表，先检查现有依赖、锁文件和 Token",
+        "优先复用 Motion，并只为无法覆盖的自定义 SVG 几何评估 SVG.js 或 Anime.js",
+        "为每个元素、属性、生命周期和帧循环指定单一所有者",
+        "验证官方来源、兼容版本、许可证、清理、reduced motion 和资产权利"
+      ]
+    },
+    {
+      "id": "static-layout-only",
+      "prompt": "审查这张静态表格的列宽和对齐。",
+      "should_trigger": false,
+      "expected": [
+        "不把纯静态布局任务强行扩展成动效系统"
+      ]
+    },
+    {
+      "id": "preset-resistance",
+      "prompt": "给每个卡片套一个弹跳入场，越炫越好。",
+      "should_trigger": true,
+      "expected": [
+        "挑战无目的全量动画",
+        "评估频率、层级、物理一致性、疲劳和可访问性",
+        "保留静止并提出更有特异性的替代"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "2.0",
+  "spacing_tokens": ["0", "4", "8", "12", "16", "24", "32"],
+  "samples": [
+    {
+      "text": "期货日报 · Futures Daily 2026/Q3 12.50%",
+      "script_roles": ["CJK", "Latin", "numeral", "punctuation"],
+      "font_family": "approved-cjk, approved-latin, sans-serif",
+      "line_height": "24px",
+      "baseline_status": "verified",
+      "block_gap": "16",
+      "line_gap": "8",
+      "letter_spacing": "0",
+      "optical_correction": false
+    }
+  ]
+}
