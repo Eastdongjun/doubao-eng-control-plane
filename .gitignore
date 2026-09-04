@@ -20,3 +20,7 @@ monitor/*.log
 _eval_samples/
 _replay/
 backups/
+
+# 演练/备份产物（不入库）
+backups/
+_drill/

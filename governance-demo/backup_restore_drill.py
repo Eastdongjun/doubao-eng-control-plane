@@ -50,7 +50,7 @@ def main():
     print(f"  → manifest.json {len(manifest)} 条校验记录")
 
     # 模拟恢复目标：drill 工作区（不碰真实源）
-    print("\n【阶段2·模拟】把资产「复制」到演练区，然后模拟丢失")
+    print("\n【阶段2·模拟】把资产「复制」到演练区，然后模拟丢失/损坏")
     for rel, label in SRC:
         src = ROOT / rel
         if not src.exists():
@@ -63,22 +63,53 @@ def main():
             shutil.copy2(src, dst)
     print("  → 已复制到演练区:", work_dir.relative_to(ROOT).as_posix())
 
-    # 模拟丢失：删除演练区里的关键文件
-    victim = work_dir / "vscode-mcp/server.py"
-    victim.unlink()
-    print(f"  ✗ 模拟事故: {victim.relative_to(ROOT)} 已丢失")
+    # 模拟事故：删除 + 篡改演练区多个关键文件（覆盖"文件丢失"与"内容损坏"两类）
+    victims = [
+        ("vscode-mcp/server.py", "删除"),
+        ("skills/工程化总控/SKILL.md", "删除"),
+        ("governance-demo/capability_registry.py", "篡改"),
+    ]
+    for rel, kind in victims:
+        v = work_dir / rel
+        if v.exists():
+            if kind == "删除":
+                v.unlink()
+                print(f"  ✗ 模拟事故[{kind}]: {rel}")
+            else:
+                v.write_text("# 被恶意篡改的内容\n", encoding="utf-8")
+                print(f"  ✗ 模拟事故[{kind}]: {rel}")
+        else:
+            print(f"  ⚠ 演练区无 {rel}（备份时该资产缺失）")
 
-    print("\n【阶段3·恢复】从备份恢复到演练区")
-    shutil.copy2(backup_dir / "vscode-mcp/server.py", victim)
-    print(f"  → 已从备份恢复 {victim.relative_to(ROOT)}")
+    print("\n【阶段3·恢复】从备份恢复全部 manifest 条目到演练区")
+    manifest = json.loads((backup_dir / "manifest.json").read_text(encoding="utf-8"))
+    restored = 0
+    for entry in manifest:
+        dst = work_dir / entry["rel"]
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(backup_dir / entry["rel"], dst)
+        restored += 1
+    print(f"  → 已恢复 {restored} 个文件")
 
-    print("\n【阶段4·校验】")
-    orig_md5 = md5(ROOT / "vscode-mcp/server.py")
-    rest_md5 = md5(victim)
-    ok = orig_md5 == rest_md5
-    print(f"  原始 md5: {orig_md5[:16]}…")
-    print(f"  恢复 md5: {rest_md5[:16]}…")
-    print("  一致性:", "✓ 完全一致，可恢复" if ok else "✗ 不一致")
+    print("\n【阶段4·校验】全量 manifest md5 一致性")
+    ok_count = 0
+    fail = []
+    for entry in manifest:
+        f = work_dir / entry["rel"]
+        if not f.exists():
+            fail.append((entry["rel"], "缺失"))
+            continue
+        cur = md5(f)
+        if cur == entry["md5"]:
+            ok_count += 1
+        else:
+            fail.append((entry["rel"], "md5 不一致"))
+    total = len(manifest)
+    print(f"  校验 {ok_count}/{total} 一致")
+    for rel, why in fail[:8]:
+        print(f"  ✗ {rel}: {why}")
+    ok = ok_count == total
+    print("  结果:", "✓ 全量备份可完整恢复，回滚端到端演练通过" if ok else f"✗ {len(fail)} 项恢复失败")
     return 0 if ok else 1
 
 if __name__ == "__main__":

@@ -70,3 +70,14 @@ description: 软件项目工程化总控（编排层）。当用户提出新的�
 ### 4. 新增技能自动入编
 新增技能装入 `.user_skills` 后运行 `python3 governance-demo/skill_registry_builder.py build`，自动完成注册、冲突分组、阶段映射，无需手工维护注册表。
 
+### 5. 需求追踪矩阵（自动生成，保证全链路可追溯）
+每个项目在其工作目录用 `governance-demo/traceability_matrix.py` 维护 `需求追踪矩阵.md`：
+- **阶段 2 完成时**：`python3 governance-demo/traceability_matrix.py init <项目目录>` —— 从 `阶段2_需求规格.md` 自动提取 US-xx/AC-xx，生成矩阵。
+- **每阶段产物落地后**：`python3 governance-demo/traceability_matrix.py update <项目目录>` —— 自动回填 设计模块/代码文件/测试用例/发布版本。
+- **阶段 8（测试）与阶段 10（发布）后**：`python3 governance-demo/traceability_matrix.py check <项目目录>` —— 覆盖率未达 100% 视为质量门禁不通过，回填到闭环才进入下一阶段。
+- 追踪链口径：业务目标 → REQ → 设计 → 代码 → 测试 → 版本 → 运行指标。
+
+### 6. 回滚端到端演练（上线前强制验证可恢复）
+- **阶段 9 上线准备**：运行 `python3 governance-demo/backup_restore_drill.py`，完成 备份 → 模拟丢失/篡改 → 全量恢复 → md5 校验 四步演练；未通过则不得上线。
+- 演练只操作 `backups/` 与 `_drill/` 区，不触碰真实源文件，可放心执行。
+
