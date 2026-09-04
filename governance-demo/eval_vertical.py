@@ -77,7 +77,7 @@ def main():
         "语法可编译率": f"{results['syntax_pass']}/{st} ({syntax_rate}%)",
         "运行成功率": f"{results['run_pass']}/{rt} ({run_rate}%)",
         "输出断言通过率": f"{results['assert_pass']}/{at} ({assert_rate}%)",
-        "评估时间": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "评估时间": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
     }
     print("-" * 66)
     print(f"  语法可编译率 : {results['summary']['语法可编译率']}")

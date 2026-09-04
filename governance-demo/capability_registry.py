@@ -75,7 +75,7 @@ SKILLS = [
 def cmd_build(args):
     reg = {
         "_meta": {
-            "version": "1.0", "generated_at": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+            "version": "1.0", "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
             "schema": "见本文件 properties 定义",
         },
         "tools": [dict(t, type="tool", status="active") for t in TOOLS],

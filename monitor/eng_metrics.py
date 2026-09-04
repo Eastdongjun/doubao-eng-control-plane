@@ -8,7 +8,7 @@
   python3 monitor/eng_metrics.py            # 采集并输出报告 + 写 .governance/eng-metrics.json
   python3 monitor/eng_metrics.py --json     # 仅输出 JSON
 """
-import datetime, hashlib, json, pathlib, re, subprocess, sys
+import datetime,  json, pathlib, re, subprocess, sys
 
 ROOT = pathlib.Path("/Users/donglai/Doubao/chats/2026-09-03/new-chat-6")
 SKILL_DIR = pathlib.Path("/Users/donglai/Library/Application Support/Doubao/Default/.doubao/agent_mode/workspace/.user_skills")
@@ -16,7 +16,7 @@ GOV = ROOT / ".governance"
 PROJECTS = ROOT / "_projects"
 
 def ts():
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 def py_ok(p):
     try:

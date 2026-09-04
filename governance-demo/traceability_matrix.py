@@ -40,7 +40,7 @@ def gen_matrix(project: pathlib.Path, reqs):
     lines = [
         "# 需求追踪矩阵",
         "",
-        f"> 由 traceability_matrix.py 自动生成 · 项目: {project.name} · 时间: {__import__('datetime').datetime.now():%Y-%m-%d %H:%M}",
+        f"> 由 traceability_matrix.py 自动生成 · 项目: {project.name} · 时间: {__import__('datetime').datetime.now(datetime.timezone.utc):%Y-%m-%d %H:%M}",
         "> 追踪链: 业务目标 → REQ → 设计模块 → 代码文件 → 测试用例 → 发布版本 → 运行指标。各阶段完成后运行 `update` 自动回填。",
         "",
         "| " + " | ".join(COLUMNS) + " |",

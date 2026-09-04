@@ -17,7 +17,7 @@ GOV = ROOT / ".governance"
 HIST = GOV / "eval-gate-history.jsonl"
 
 def ts():
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 def py_ok(p):
     try:
@@ -122,8 +122,13 @@ def main():
     print(f"质量门禁评测  {record['时间']}  项目={project or '全局'}")
     print("-" * 60)
     for k, v in results.items():
-        mark = "✓" if v is True else ("✗" if v is False else "·")
-        print(f"  {mark} {k}: {v if not isinstance(v, bool) else 'PASS' if v else 'FAIL'}")
+        if v is True:
+            mark, verdict = "✓", "PASS"
+        elif v is False:
+            mark, verdict = "✗", "FAIL"
+        else:
+            mark, verdict = "·", v
+        print(f"  {mark} {k}: {verdict}")
     print("-" * 60)
     print(f"结论: {'🟢 全部 PASS，可进入下一阶段/发布' if not failed else '🔴 有 FAIL，禁止放行'}")
     print(f"历史: {HIST} (共 {sum(1 for _ in HIST.open(encoding='utf-8')) if HIST.exists() else 0} 条)")

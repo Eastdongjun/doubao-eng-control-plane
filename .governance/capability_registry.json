@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "2.0",
-    "generated_at": "2026-09-05T00:09:13",
+    "generated_at": "2026-09-04T16:26:23",
     "schema": "skill/工具统一注册：id/type/name/description/destructive/failure_mode/cost/status/stage/group/routing",
     "source": "/Users/donglai/Library/Application Support/Doubao/Default/.doubao/agent_mode/workspace/.user_skills",
     "total": 190

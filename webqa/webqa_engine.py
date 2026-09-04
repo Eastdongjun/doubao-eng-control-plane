@@ -232,7 +232,7 @@ def run(cases_path, out_dir=None, html=False, parallel=False, strict=False):
     n_pass = sum(1 for r in results if r["passed"])
     summary = {"total_pages": len(results), "passed_pages": n_pass, "failed_pages": len(results) - n_pass,
                "total_ms": total_ms, "strict": strict,
-               "generated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+               "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")}
     report = {"summary": summary, "results": results}
     json_out = out_dir / "webqa-report.json"
     json_out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

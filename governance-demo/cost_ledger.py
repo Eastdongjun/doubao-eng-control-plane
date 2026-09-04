@@ -76,7 +76,7 @@ def cmd_report(args):
     total_dur = sum(r["dur_s"] for r in rows) / 60
     total_cost = sum(r["cost"] for r in rows)
     print("=" * 64)
-    print(f"成本观测报表 · {datetime.datetime.now():%Y-%m-%d %H:%M} · 估算口径(元/分钟={RATE_MIN}, 元/KB={RATE_KB})")
+    print(f"成本观测报表 · {datetime.datetime.now(datetime.timezone.utc):%Y-%m-%d %H:%M} · 估算口径(元/分钟={RATE_MIN}, 元/KB={RATE_KB})")
     print("=" * 64)
     # 按项目
     by_proj = {}
@@ -96,7 +96,7 @@ def cmd_report(args):
 
 def cmd_record(args):
     rec = {"project": args.project, "stage": args.stage, "skill": args.skill,
-           "note": args.note, "at": datetime.datetime.now().isoformat()}
+           "note": args.note, "at": datetime.datetime.now(datetime.timezone.utc).isoformat()}
     with LEDGER.open("a", encoding="utf-8") as f:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
     print(f"✓ 已记录成本行: {rec}")

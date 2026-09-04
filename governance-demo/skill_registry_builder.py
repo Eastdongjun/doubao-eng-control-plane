@@ -143,7 +143,7 @@ def build():
     skills = scan_skills()
     reg = {
         "_meta": {
-            "version": "2.0", "generated_at": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+            "version": "2.0", "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
             "schema": "skill/工具统一注册：id/type/name/description/destructive/failure_mode/cost/status/stage/group/routing",
             "source": str(USER_SKILLS),
             "total": len(skills),

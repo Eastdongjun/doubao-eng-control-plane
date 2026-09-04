@@ -24,7 +24,7 @@ def save(records):
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 def now():
-    return datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
 def cmd_start(args):
     recs = load()

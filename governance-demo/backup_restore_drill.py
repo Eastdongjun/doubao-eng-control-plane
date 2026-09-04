@@ -17,7 +17,7 @@ def md5(p):
     return hashlib.md5(p.read_bytes()).hexdigest()
 
 def main():
-    ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
     backup_dir = ROOT / f"backups/doubao-eng-{ts}"
     work_dir = ROOT / f"_drill/{ts}"
     backup_dir.mkdir(parents=True, exist_ok=True)

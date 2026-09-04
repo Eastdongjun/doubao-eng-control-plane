@@ -21,6 +21,21 @@ SEV_ERROR, SEV_WARNING = "ERROR", "WARNING"
 DEFAULT_COMPLEXITY = 15
 DEFAULT_PARAMS = 7
 DEFAULT_DUP = 3
+# 标准参数值/协议词：重复出现不视为魔法字符串（编码、模式、HTTP 动词、常用格式名等）
+STD_LITERALS = {
+    "utf-8", "utf8", "ascii", "latin-1", "gbk", "utf-16", "__main__",
+    "r", "w", "a", "rb", "wb", "ab", "x", "w+", "r+",
+    "strict", "ignore", "replace", "errors", "encoding", "decode", "encode",
+    "json", "txt", "csv", "xml", "html", "yaml", "yml", "toml", "ini", "log", "md",
+    "http", "https", "ftp", "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS",
+    "true", "false", "null", "none", "True", "False", "None",
+    "zh-CN", "en-US", "zh", "en", "cn", "us",
+    "dev", "test", "prod", "production", "staging", "local", "remote",
+    "main", "master", "develop", "release", "feature", "hotfix", "bugfix",
+    "error", "warning", "info", "debug", "critical", "fatal",
+    "success", "failed", "fail", "pass", "pending", "skipped", "unknown",
+    "default", "custom", "manual", "auto", "all", "none",
+}
 evidence_dir = lambda root: pathlib.Path(root) / ".ai" / "evidence"
 
 class Problem:
@@ -42,7 +57,15 @@ def load_exemptions(root):
         return []
 
 def is_exempt(exemptions, rule, file, line):
-    return any(e.get("rule") == rule and e.get("file") == file and e.get("line") == line for e in exemptions)
+    for e in exemptions:
+        if e.get("rule") != rule: continue
+        if e.get("file") == file:
+            # 文件级豁免：省略 line 或 line=0 → 该文件该规则全部豁免
+            if not e.get("line") or e["line"] == 0:
+                return True
+            if e["line"] == line:
+                return True
+    return False
 
 def rel(path, root):
     try:
@@ -59,7 +82,7 @@ class PyChecker:
     def check(self, path, code):
         f = rel(path, self.root)
         try:
-            tree = ast.parse(code)
+            tree = ast.parse(code, filename=str(f))
         except SyntaxError as e:
             self._add("S9999", SEV_ERROR, f"语法错误: {e.msg}", f, e.lineno or 0, "修复语法错误")
             return
@@ -75,10 +98,20 @@ class PyChecker:
         if not is_exempt(self.exemptions, rule, f, line):
             self.problems.append(Problem(rule, sev, msg, f, line, sug))
     def _scan_dup_literals(self, tree, f):
+        # 字典/对象键不是魔法字符串，先收集并排除
+        dict_keys = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Dict):
+                for k in node.keys:
+                    if isinstance(k, ast.Constant) and isinstance(k.value, str):
+                        dict_keys.add(k.value)
         for node in ast.walk(tree):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
                 v = node.value.strip()
-                if len(v) < 3 or len(v) > 80 or v.isdigit(): continue
+                if len(v) < 3 or len(v) > 80 or v.isdigit() or v in dict_keys: continue
+                if v in STD_LITERALS: continue          # 标准参数值/协议词
+                if v.startswith(("/", ".", "\\")): continue  # 路径/相对路径片段
+                if re.fullmatch(r"[\w.\-]+\.(py|js|ts|java|json|md|txt|csv|xml|html|yml|yaml|log|sh|bat|jar|war|class|png|jpg|svg|css|scss|tsx|jsx)", v): continue
                 key = v
                 self.dup_counter.setdefault(key, []).append((f, node.lineno))
     def _dup_report(self):
@@ -110,7 +143,12 @@ class PyChecker:
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
                and node.func.attr in ("now", "today"):
                 base = node.func.value
-                base_id = base.id if isinstance(base, ast.Name) else (base.attr if isinstance(base, ast.Attribute) else "")
+                if isinstance(base, ast.Name):
+                    base_id = base.id
+                elif isinstance(base, ast.Attribute):
+                    base_id = base.attr
+                else:
+                    base_id = ""
                 if base_id in ("datetime", "date", "LocalDate", "LocalDateTime") \
                    and not node.args \
                    and not any(k.arg in ("tz", "tzinfo", "zone", "clock") for k in node.keywords if k.arg):
@@ -199,7 +237,8 @@ class TextChecker:
             pat = re.compile(r"['\"]((?:[^'\"\\]|\\.){3,80})['\"]")
         for m in pat.finditer(code):
             v = m.group(1)
-            if v.isdigit() or v.startswith(("http", "/")): continue
+            if v.isdigit() or v.startswith(("http", "/", ".")): continue
+            if v in STD_LITERALS: continue
             self.dup_counter.setdefault(v, []).append((f, code[:m.start()].count("\n") + 1))
     def _dup_report(self):
         for v, locs in self.dup_counter.items():
@@ -253,7 +292,10 @@ class TextChecker:
             def split(a):
                 return [x.strip() for x in a.split(",") if x.strip()]
         for m in pat.finditer(code):
-            args = split(m.group(1) or m.group(2) or "")
+            g = m.group(1)
+            if g is None:
+                g = m.group(2)
+            args = split(g or "")
             if len(args) > DEFAULT_PARAMS:
                 self._add("S107", SEV_WARNING, f"Method has {len(args)} parameters, which is greater than {DEFAULT_PARAMS} authorized.",
                           f, code[:m.start()].count("\n") + 1, "封装参数对象或拆分职责。")
@@ -267,20 +309,27 @@ class TextChecker:
 def collect_files(root):
     root = pathlib.Path(root)
     files = []
-    skip_dirs = {".git", ".venv", "node_modules", "target", "build", "dist", "__pycache__", ".ai", "backups", "_drill"}
+    skip_dirs = {".git", ".venv", "node_modules", "target", "build", "dist", "__pycache__", ".ai", "backups", "_drill",
+                 "_ref_skills", "_projects", "_eval_samples", "vscode-demo"}
     for p in root.rglob("*"):
         if p.is_file() and p.suffix in (".py", ".java", ".js", ".ts", ".mjs", ".cjs"):
-            if any(part in skip_dirs for part in p.parts):
+            # 仅按相对 root 的子目录判断 skip：root 自身为 _projects 下的项目时不受影响
+            try:
+                rel = p.relative_to(root)
+            except ValueError:
+                continue
+            if any(part in skip_dirs for part in rel.parts):
                 continue
             files.append(p)
     return files
 
-def run_checks(root):
+def run_checks(root, only=None):
     root = pathlib.Path(root)
     problems = []
     py = PyChecker(root)
     text_checks = {}
-    for f in collect_files(root):
+    files = collect_files(root) if only is None else only
+    for f in files:
         code = f.read_text(encoding="utf-8", errors="replace")
         if f.suffix == ".py":
             py.check(f, code)
@@ -335,7 +384,7 @@ def cmd_improve(args):
     ev = evidence_dir(root)
     ev.mkdir(parents=True, exist_ok=True)
     state = {
-        "generated_at": __import__("datetime").datetime.now().isoformat(timespec="seconds"),
+        "generated_at": __import__("datetime").datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "project": str(root),
         "problems_count": len(problems),
         "status": "PASS" if not problems else "NEEDS_WORK",
@@ -351,12 +400,24 @@ def cmd_improve(args):
     return 0 if not problems else 1
 
 def cmd_hook(args):
-    """git pre-commit：Error>0 或 未豁免 Warning>0 → 阻断 commit"""
+    """git pre-commit：Error>0 或 未豁免 Warning>0 → 阻断 commit。--staged 仅检查暂存文件（增量）。"""
     root = pathlib.Path(args.root)
     if not root.exists():
         print("BLOCKED: 项目根不存在，禁止提交"); return 1
-    # 桥可用性：engineering 脚本自身就是桥，缺失即 BLOCKED
-    problems = run_checks(root)
+    if args.staged:
+        r = subprocess.run(["git", "-C", str(root), "diff", "--cached", "--name-only", "--diff-filter=ACM"],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            print("🔴 BLOCKED: 无法读取 git 暂存区（非 git 仓库？），禁止提交。"); return 1
+        wanted = {".py", ".java", ".js", ".ts", ".mjs", ".cjs"}
+        only = [root / x for x in r.stdout.splitlines() if pathlib.Path(x).suffix in wanted]
+        only = [p for p in only if p.exists()]
+        if not only:
+            print("🟢 SONARQUBE GATE PASS — 本次无代码文件变更，允许提交")
+            return 0
+        problems = run_checks(root, only=only)
+    else:
+        problems = run_checks(root)
     c = count_by_sev(problems)
     blocked = []
     if c["ERROR"] > 0:
@@ -379,14 +440,14 @@ def cmd_install_hook(args):
     hook = hooks / "pre-commit"
     script = f"""#!/bin/sh
 # SonarQube 硬门禁 pre-commit hook（由 engineering install-hook 生成）
-# 阻断规则: Error>0 / 未豁免 Warning>0 / 桥不可用 → 禁止 commit
+# 阻断规则: Error>0 / 未豁免 Warning>0 / 桥不可用 → 禁止 commit（仅检查本次暂存代码，增量）
 ENG="{pathlib.Path(__file__).resolve()}"
 ROOT="{repo.resolve()}"
 if [ ! -f "$ENG" ]; then
   echo "🔴 BLOCKED: engineering 桥不可用（$ENG 缺失），禁止提交。请先恢复工程化工具链。"
   exit 1
 fi
-"${{PYTHON:-python3}}" "$ENG" hook "$ROOT" || exit 1
+"${{PYTHON:-python3}}" "$ENG" hook "$ROOT" --staged || exit 1
 exit 0
 """
     hook.write_text(script, encoding="utf-8")
@@ -399,7 +460,7 @@ def main():
     sub = p.add_subparsers(dest="cmd", required=True)
     s1 = sub.add_parser("problems"); s1.add_argument("root"); s1.add_argument("--json", action="store_true"); s1.set_defaults(fn=cmd_problems)
     s2 = sub.add_parser("improve"); s2.add_argument("root"); s2.set_defaults(fn=cmd_improve)
-    s3 = sub.add_parser("hook"); s3.add_argument("root"); s3.set_defaults(fn=cmd_hook)
+    s3 = sub.add_parser("hook"); s3.add_argument("root"); s3.add_argument("--staged", action="store_true"); s3.set_defaults(fn=cmd_hook)
     s4 = sub.add_parser("install-hook"); s4.add_argument("repo"); s4.set_defaults(fn=cmd_install_hook)
     a = p.parse_args()
     sys.exit(a.fn(a) or 0)

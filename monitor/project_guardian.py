@@ -95,7 +95,7 @@ def main():
     targets = [PROJECTS / only] if only else sorted(PROJECTS.iterdir())
     targets = [t for t in targets if t.is_dir() and not t.name.startswith(".")]
     print("=" * 66)
-    print(f"项目守护巡检 · {datetime.datetime.now():%Y-%m-%d %H:%M} · {len(targets)} 个项目")
+    print(f"项目守护巡检 · {datetime.datetime.now(datetime.timezone.utc):%Y-%m-%d %H:%M} · {len(targets)} 个项目")
     print("=" * 66)
     need_advance = []
     for p in targets:

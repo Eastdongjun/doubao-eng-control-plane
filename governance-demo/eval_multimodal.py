@@ -4,7 +4,7 @@
 用法: eval_multimodal.py            # 标准样本评测（归零门禁）
       eval_multimodal.py --selftest # 注入缺陷样本，验证评测器能检出问题
 """
-import argparse, datetime, json, pathlib, re, subprocess, sys
+import argparse, datetime, json, pathlib, re, sys
 
 ROOT = pathlib.Path("/Users/donglai/Doubao/chats/2026-09-03/new-chat-6")
 SAMPLE = ROOT / "_eval_samples"
@@ -179,12 +179,16 @@ def main():
             if not d["pass"]:
                 print(f"      → 检出: {d}")
     print("-" * 60)
-    mode = "自检通过（缺陷全检出）" if (args.selftest and not all_gate) else \
-           ("✓ 质量门禁通过（五维 100%，归零）" if all_gate else "✗ 存在未达 100% 维度")
+    if args.selftest and not all_gate:
+        mode = "自检通过（缺陷全检出）"
+    elif all_gate:
+        mode = "✓ 质量门禁通过（五维 100%，归零）"
+    else:
+        mode = "✗ 存在未达 100% 维度"
     print(mode)
     GOV.mkdir(exist_ok=True)
     report = {"mode": "selftest" if args.selftest else "gate",
-              "generated_at": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+              "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
               "dims": dims}
     (GOV / "eval-multimodal.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"报告: {GOV / 'eval-multimodal.json'}")

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """可信执行治理实测：备份→修改→审计→失败→回滚→验证，全链路走一遍"""
-import json, os, shutil, datetime, pathlib
+import json, shutil, datetime, pathlib
 
 ROOT = pathlib.Path("/Users/donglai/Doubao/chats/2026-09-03/new-chat-6/governance-demo")
 GOV = ROOT / ".governance"
@@ -9,7 +9,7 @@ AUDIT = GOV / "audit.jsonl"
 TARGET = ROOT / "task.txt"
 
 def now():
-    return datetime.datetime.now().astimezone().isoformat()
+    return datetime.datetime.now(datetime.timezone.utc).astimezone().isoformat()
 
 def audit(task, risk, action, target, command="", backup="", result="ok", note=""):
     rec = {"ts": now(), "task": task, "risk": risk, "action": action,
@@ -21,7 +21,7 @@ def audit(task, risk, action, target, command="", backup="", result="ok", note="
     return rec
 
 def backup(path):
-    ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M%S%f")
     dst = BACKUPS / ts / path.name
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(path, dst)
