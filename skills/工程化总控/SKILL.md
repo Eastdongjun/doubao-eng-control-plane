@@ -65,6 +65,7 @@ description: 软件项目工程化总控（编排层）。当用户提出新的�
 - 每个专项技能：**输入** = 项目上下文（项目路径 + 需求 + 追踪矩阵）；**输出** = 标准 Markdown 产物写入项目目录并命名 `阶段N_<产物名>.md` + 回填追踪矩阵。
 - **交接**：上一阶段产物路径作为下一阶段技能输入，避免重复调研、保证数据口径一致。
 - **留痕**：每个技能执行后追加一行到 `.governance/trace.jsonl`（task_trace.py），记录：阶段、技能、产物路径、耗时、结果。
+- **写盘前置检查**：跨 agent 执行（Claude Code / Codex / Gemini 等）时，先确认产物目录已授权可写（或用 `--permission-mode acceptEdits` / `--allowedTools` 授权），再开始写文件；若写被拒，直接请求授权或换目录，不要反复用不同方式探测写权限。
 
 ### 4. 新增技能自动入编
 新增技能装入 `.user_skills` 后运行 `python3 governance-demo/skill_registry_builder.py build`，自动完成注册、冲突分组、阶段映射，无需手工维护注册表。

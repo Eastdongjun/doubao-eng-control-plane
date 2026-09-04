@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "2.0",
-    "generated_at": "2026-09-04T23:02:02",
+    "generated_at": "2026-09-04T23:08:31",
     "schema": "skill/工具统一注册：id/type/name/description/destructive/failure_mode/cost/status/stage/group/routing",
     "source": "/Users/donglai/Library/Application Support/Doubao/Default/.doubao/agent_mode/workspace/.user_skills",
     "total": 189
@@ -17,8 +17,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        8
+      ],
+      "stage_label": "架构,测试",
       "group": null,
       "routing": ""
     },
@@ -143,8 +146,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -189,8 +194,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -203,8 +210,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        9,
+        10
+      ],
+      "stage_label": "上线准备,发布",
       "group": null,
       "routing": ""
     },
@@ -217,8 +227,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        5,
+        7
+      ],
+      "stage_label": "详细设计,编码",
       "group": null,
       "routing": ""
     },
@@ -231,8 +244,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -245,8 +260,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        8
+      ],
+      "stage_label": "架构,测试",
       "group": "安全族",
       "routing": "AI应用→AI安全；云设施→云安全；主动攻击模拟→渗透测试/红队；持续监测→威胁检测；Web→owasp安全"
     },
@@ -372,8 +390,12 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        2,
+        3,
+        4
+      ],
+      "stage_label": "需求,设计,架构",
       "group": null,
       "routing": ""
     },
@@ -386,8 +408,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7,
+        8
+      ],
+      "stage_label": "编码,测试",
       "group": "代码审查族",
       "routing": "本地改动→代码审查；PR/diff→pr审查专家；方案多视角→具名角色对抗审查；接口→api设计审查；依赖→依赖审计"
     },
@@ -480,8 +505,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -510,8 +537,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        9,
+        10
+      ],
+      "stage_label": "上线准备,发布",
       "group": null,
       "routing": ""
     },
@@ -619,8 +649,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7
+      ],
+      "stage_label": "编码",
       "group": null,
       "routing": ""
     },
@@ -697,8 +729,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        11
+      ],
+      "stage_label": "架构,运维",
       "group": "安全族",
       "routing": "AI应用→AI安全；云设施→云安全；主动攻击模拟→渗透测试/红队；持续监测→威胁检测；Web→owasp安全"
     },
@@ -727,8 +762,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        9,
+        10
+      ],
+      "stage_label": "上线准备,发布",
       "group": null,
       "routing": ""
     },
@@ -741,8 +779,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        9,
+        10
+      ],
+      "stage_label": "上线准备,发布",
       "group": null,
       "routing": ""
     },
@@ -755,8 +796,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7,
+        8
+      ],
+      "stage_label": "编码,测试",
       "group": "代码审查族",
       "routing": "本地改动→代码审查；PR/diff→pr审查专家；方案多视角→具名角色对抗审查；接口→api设计审查；依赖→依赖审计"
     },
@@ -859,8 +903,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        5,
+        8
+      ],
+      "stage_label": "详细设计,测试",
       "group": "代码审查族",
       "routing": "本地改动→代码审查；PR/diff→pr审查专家；方案多视角→具名角色对抗审查；接口→api设计审查；依赖→依赖审计"
     },
@@ -873,8 +920,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": "代码审查族",
       "routing": "本地改动→代码审查；PR/diff→pr审查专家；方案多视角→具名角色对抗审查；接口→api设计审查；依赖→依赖审计"
     },
@@ -887,8 +937,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7
+      ],
+      "stage_label": "编码",
       "group": null,
       "routing": ""
     },
@@ -950,8 +1002,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -964,8 +1018,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -978,8 +1034,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -992,8 +1050,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -1006,8 +1066,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -1050,8 +1112,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": null,
       "routing": ""
     },
@@ -1130,8 +1195,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        2,
+        12
+      ],
+      "stage_label": "需求,迭代退役",
       "group": null,
       "routing": ""
     },
@@ -1206,8 +1274,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4
+      ],
+      "stage_label": "架构",
       "group": null,
       "routing": ""
     },
@@ -1220,8 +1290,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        9,
+        10
+      ],
+      "stage_label": "上线准备,发布",
       "group": null,
       "routing": ""
     },
@@ -1234,8 +1307,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7
+      ],
+      "stage_label": "编码",
       "group": null,
       "routing": ""
     },
@@ -1262,8 +1337,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": null,
       "routing": ""
     },
@@ -1292,8 +1370,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8,
+        11
+      ],
+      "stage_label": "测试,运维",
       "group": "安全族",
       "routing": "AI应用→AI安全；云设施→云安全；主动攻击模拟→渗透测试/红队；持续监测→威胁检测；Web→owasp安全"
     },
@@ -1306,8 +1387,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8
+      ],
+      "stage_label": "测试",
       "group": "安全族",
       "routing": "AI应用→AI安全；云设施→云安全；主动攻击模拟→渗透测试/红队；持续监测→威胁检测；Web→owasp安全"
     },
@@ -1320,8 +1403,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4
+      ],
+      "stage_label": "架构",
       "group": "安全族",
       "routing": "AI应用→AI安全；云设施→云安全；主动攻击模拟→渗透测试/红队；持续监测→威胁检测；Web→owasp安全"
     },
@@ -1350,8 +1435,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        9
+      ],
+      "stage_label": "上线准备",
       "group": null,
       "routing": ""
     },
@@ -1378,8 +1465,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": "代码审查族",
       "routing": "本地改动→代码审查；PR/diff→pr审查专家；方案多视角→具名角色对抗审查；接口→api设计审查；依赖→依赖审计"
     },
@@ -1392,8 +1482,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -1406,8 +1498,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": null,
       "routing": ""
     },
@@ -1448,8 +1543,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7
+      ],
+      "stage_label": "编码",
       "group": null,
       "routing": ""
     },
@@ -1588,8 +1685,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        5,
+        12
+      ],
+      "stage_label": "详细设计,迭代退役",
       "group": null,
       "routing": ""
     },
@@ -1676,8 +1776,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        12
+      ],
+      "stage_label": "迭代退役",
       "group": null,
       "routing": ""
     },
@@ -1756,8 +1858,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        5
+      ],
+      "stage_label": "详细设计",
       "group": "数据库族",
       "routing": "结构设计→数据库设计；物理表→数据库表结构设计；调优→数据库优化；质量→数据质量审计"
     },
@@ -1770,8 +1874,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8
+      ],
+      "stage_label": "测试",
       "group": null,
       "routing": ""
     },
@@ -1814,8 +1920,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        2,
+        4
+      ],
+      "stage_label": "需求,架构",
       "group": null,
       "routing": ""
     },
@@ -1828,8 +1937,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8
+      ],
+      "stage_label": "测试",
       "group": null,
       "routing": ""
     },
@@ -1842,8 +1953,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": null,
       "routing": ""
     },
@@ -1872,8 +1986,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": null,
       "routing": ""
     },
@@ -1886,8 +2003,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": null,
       "routing": ""
     },
@@ -1932,8 +2052,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "H",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4
+      ],
+      "stage_label": "架构",
       "group": null,
       "routing": ""
     },
@@ -1978,8 +2100,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "H",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4
+      ],
+      "stage_label": "架构",
       "group": null,
       "routing": ""
     },
@@ -1992,8 +2116,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7,
+        8
+      ],
+      "stage_label": "编码,测试",
       "group": null,
       "routing": ""
     },
@@ -2055,8 +2182,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8
+      ],
+      "stage_label": "测试",
       "group": null,
       "routing": ""
     },
@@ -2069,8 +2198,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8,
+        11
+      ],
+      "stage_label": "测试,运维",
       "group": null,
       "routing": ""
     },
@@ -2083,8 +2215,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "H",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8
+      ],
+      "stage_label": "测试",
       "group": "安全族",
       "routing": "AI应用→AI安全；云设施→云安全；主动攻击模拟→渗透测试/红队；持续监测→威胁检测；Web→owasp安全"
     },
@@ -2097,8 +2231,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8
+      ],
+      "stage_label": "测试",
       "group": null,
       "routing": ""
     },
@@ -2155,8 +2291,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "H",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7,
+        11
+      ],
+      "stage_label": "编码,运维",
       "group": null,
       "routing": ""
     },
@@ -2169,8 +2308,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "H",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8,
+        11
+      ],
+      "stage_label": "测试,运维",
       "group": "安全族",
       "routing": "AI应用→AI安全；云设施→云安全；主动攻击模拟→渗透测试/红队；持续监测→威胁检测；Web→owasp安全"
     },
@@ -2183,8 +2325,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8
+      ],
+      "stage_label": "测试",
       "group": null,
       "routing": ""
     },
@@ -2197,8 +2341,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        5,
+        7
+      ],
+      "stage_label": "详细设计,编码",
       "group": null,
       "routing": ""
     },
@@ -2241,8 +2388,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        3
+      ],
+      "stage_label": "设计",
       "group": null,
       "routing": ""
     },
@@ -2334,8 +2483,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        5
+      ],
+      "stage_label": "架构,详细设计",
       "group": null,
       "routing": ""
     },
@@ -2458,8 +2610,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7
+      ],
+      "stage_label": "编码",
       "group": null,
       "routing": ""
     },
@@ -2472,8 +2626,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "H",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": null,
       "routing": ""
     },
@@ -2486,8 +2643,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "H",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        7,
+        12
+      ],
+      "stage_label": "编码,迭代退役",
       "group": null,
       "routing": ""
     },
@@ -2500,8 +2660,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        2
+      ],
+      "stage_label": "需求",
       "group": null,
       "routing": ""
     },
@@ -2627,8 +2789,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "H",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        7
+      ],
+      "stage_label": "架构,编码",
       "group": null,
       "routing": ""
     },
@@ -2657,8 +2822,12 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        9,
+        10,
+        11
+      ],
+      "stage_label": "上线准备,发布,运维",
       "group": null,
       "routing": ""
     },
@@ -2735,8 +2904,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8,
+        11
+      ],
+      "stage_label": "测试,运维",
       "group": null,
       "routing": ""
     },
@@ -2749,8 +2921,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8,
+        11
+      ],
+      "stage_label": "测试,运维",
       "group": null,
       "routing": ""
     },
@@ -2763,8 +2938,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        2,
+        7
+      ],
+      "stage_label": "需求,编码",
       "group": null,
       "routing": ""
     },
@@ -2777,8 +2955,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        5,
+        8
+      ],
+      "stage_label": "详细设计,测试",
       "group": null,
       "routing": ""
     },
@@ -2791,8 +2972,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        5,
+        8
+      ],
+      "stage_label": "详细设计,测试",
       "group": null,
       "routing": ""
     },
@@ -2805,8 +2989,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        5
+      ],
+      "stage_label": "架构,详细设计",
       "group": null,
       "routing": ""
     },
@@ -2835,8 +3022,11 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        4,
+        5
+      ],
+      "stage_label": "架构,详细设计",
       "group": null,
       "routing": ""
     },
@@ -2849,8 +3039,10 @@
       "failure_mode": "执行失败需检查产物",
       "cost": "M",
       "status": "active",
-      "stage": [],
-      "stage_label": "",
+      "stage": [
+        8
+      ],
+      "stage_label": "测试",
       "group": null,
       "routing": ""
     }
