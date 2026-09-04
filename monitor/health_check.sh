@@ -19,7 +19,20 @@ log() { echo "[$NOW] $1" >> "$LOG"; }
 if lsof -iTCP:$PORT -sTCP:LISTEN >/dev/null 2>&1; then
   log "✓ 端口 $PORT 监听正常"
 else
-  log "✗ 端口 $PORT 未监听（MCP Server 可能挂了）"; FAILS=$((FAILS+1))
+  log "✗ 端口 $PORT 未监听（MCP Server 可能挂了），尝试自动拉起…"
+  VENV_PY="/Users/donglai/Doubao/chats/2026-09-03/new-chat-6/vscode-mcp/.venv/bin/python"
+  if [ -x "$VENV_PY" ]; then
+    cd "/Users/donglai/Doubao/chats/2026-09-03/new-chat-6/vscode-mcp" || exit 1
+    nohup "$VENV_PY" server.py >> server.log 2>&1 &
+    sleep 2
+    if lsof -iTCP:$PORT -sTCP:LISTEN >/dev/null 2>&1; then
+      log "✓ 已自动拉起 MCP Server（venv 环境）"
+    else
+      log "✗ 自动拉起失败，需人工检查（务必用 .venv/bin/python，系统 python3 缺 mcp 包）"; FAILS=$((FAILS+1))
+    fi
+  else
+    log "✗ .venv 不存在，无法自愈"; FAILS=$((FAILS+1))
+  fi
 fi
 
 # ② 进程
