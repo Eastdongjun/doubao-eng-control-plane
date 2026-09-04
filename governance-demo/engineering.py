@@ -30,6 +30,7 @@ STD_LITERALS = {
     "http", "https", "ftp", "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS",
     "true", "false", "null", "none", "True", "False", "None",
     "zh-CN", "en-US", "zh", "en", "cn", "us",
+    "Asia/Shanghai", "UTC", "GMT", "GMT+8", "UTC+8", "Asia/Beijing",
     "dev", "test", "prod", "production", "staging", "local", "remote",
     "main", "master", "develop", "release", "feature", "hotfix", "bugfix",
     "error", "warning", "info", "debug", "critical", "fatal",
@@ -243,12 +244,24 @@ class TextChecker:
             # 跳过 map/get 调用 key 上下文：xxx("key") 或 xxx("key", ...) —— 字典键不视为魔法字符串
             if re.search(r"\b(?:get|put|set|remove|containsKey|getOrDefault|computeIfAbsent|getProperty|setProperty|setAttribute|getAttribute)\s*\(\s*['\"]?$", code[max(0, m.start() - 60):m.start()]):
                 continue
+            # 跳过注解属性/参数上下文：@Xxx(value = "v")、@Xxx(name = "v", defaultValue = "v")、@SuppressWarnings("unchecked") —— 注解元数据不视为魔法字符串
+            if re.search(r"@\w+[^\n]*?\b(?:value|name|defaultValue|pattern|message|required|header|path|param)\s*=\s*['\"]$", code[max(0, m.start() - 120):m.start()]):
+                continue
+            if re.search(r"@SuppressWarnings\(\s*['\"]$", code[max(0, m.start() - 60):m.start()]):
+                continue
+            # 跳过全限定名（含两个点，如 com.shopjoy.common / java.util.List）
+            if v.count(".") >= 2:
+                continue
             self.dup_counter.setdefault(v, []).append((f, code[:m.start()].count("\n") + 1))
     def _dup_report(self):
         for v, locs in self.dup_counter.items():
             if len(locs) >= DEFAULT_DUP:
-                self._add("S1192", SEV_WARNING, f'Define a constant instead of duplicating this literal "{v[:40]}" {len(locs)} times.',
-                          locs[0][0], locs[0][1], "提取为 private static final String 常量，替换全部出现处。")
+                # 报在第一个未豁免出现位置：全部位置均豁免才跳过（避免"首次位置碰巧豁免"导致漏报）
+                for f, ln in locs:
+                    if not is_exempt(self.exemptions, "S1192", f, ln):
+                        self._add("S1192", SEV_WARNING, f'Define a constant instead of duplicating this literal "{v[:40]}" {len(locs)} times.',
+                                  f, ln, "提取为 private static final String 常量，替换全部出现处。")
+                        break
     def _complexity(self, code, f):
         for m in re.finditer(r"\b(public|private|protected)\s+[\w<>,\.\[\] ]+\s+(\w+)\s*\([^)]*\)\s*\{", code):
             body = code[m.end():]
@@ -282,7 +295,8 @@ class TextChecker:
                 self._add("S1168", SEV_ERROR, f"方法返回集合/Map（{ret_type.strip()}）却 return null，调用方无法安全迭代。",
                           f, code[:m.start()].count("\n") + 1, "空集合返回 Collections.emptyList()/emptyMap()/emptySet()。")
     def _nested_ternary(self, code, f):
-        pat = re.compile(r"[^;{}()]*\?[^;{}()]*:[^;{}()]*\?")
+        # \?(?!:) 排除 TS 可选属性/参数（key?: string）误报；Java/Python 无此语法，同样适用
+        pat = re.compile(r"[^;{}()]*\?(?!:)[^;{}()]*:[^;{}()]*\?(?!:)")
         for m in pat.finditer(code):
             self._add("S3358", SEV_ERROR, "嵌套三元表达式不可读，拆分为 if/elif 或局部变量。",
                       f, code[:m.start()].count("\n") + 1, "改为 if/else 语句或先赋值中间变量。")
