@@ -1,0 +1,221 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "generated_at": "2026-09-04T11:05:18",
+    "schema": "见本文件 properties 定义"
+  },
+  "tools": [
+    {
+      "id": "dev_open_project",
+      "name": "打开项目",
+      "description": "在 VSCode 打开指定项目目录",
+      "destructive": false,
+      "failure_mode": "路径不存在",
+      "cost": "L",
+      "type": "tool",
+      "status": "active"
+    },
+    {
+      "id": "dev_open_file",
+      "name": "打开文件",
+      "description": "在 VSCode 打开/聚焦指定文件",
+      "destructive": false,
+      "failure_mode": "文件不存在",
+      "cost": "L",
+      "type": "tool",
+      "status": "active"
+    },
+    {
+      "id": "dev_list_dir",
+      "name": "列目录",
+      "description": "列出目录内容",
+      "destructive": false,
+      "failure_mode": "目录不存在/无权限",
+      "cost": "L",
+      "type": "tool",
+      "status": "active"
+    },
+    {
+      "id": "dev_read_file",
+      "name": "读文件",
+      "description": "读取文件内容",
+      "destructive": false,
+      "failure_mode": "文件不存在/编码异常",
+      "cost": "L",
+      "type": "tool",
+      "status": "active"
+    },
+    {
+      "id": "dev_write_file",
+      "name": "写文件",
+      "description": "写入/覆盖文件",
+      "destructive": true,
+      "failure_mode": "覆盖未备份内容",
+      "cost": "L",
+      "type": "tool",
+      "status": "active"
+    },
+    {
+      "id": "dev_edit_file",
+      "name": "改文件",
+      "description": "精准编辑文件片段",
+      "destructive": true,
+      "failure_mode": "匹配串不唯一",
+      "cost": "L",
+      "type": "tool",
+      "status": "active"
+    },
+    {
+      "id": "dev_search",
+      "name": "搜索",
+      "description": "在项目中搜索内容",
+      "destructive": false,
+      "failure_mode": "无结果/超时",
+      "cost": "M",
+      "type": "tool",
+      "status": "active"
+    },
+    {
+      "id": "dev_typewrite",
+      "name": "打字机写入",
+      "description": "逐行追加写入（视觉打字机模式）",
+      "destructive": true,
+      "failure_mode": "追加到错误位置",
+      "cost": "M",
+      "type": "tool",
+      "status": "active"
+    },
+    {
+      "id": "dev_run_command",
+      "name": "运行命令",
+      "description": "在项目内执行 shell 命令",
+      "destructive": true,
+      "failure_mode": "命令失败/超时/副作用",
+      "cost": "H",
+      "type": "tool",
+      "status": "active"
+    }
+  ],
+  "skills": [
+    {
+      "id": "自动编码循环",
+      "name": "自动编码循环",
+      "description": "写→跑→查→改→注释→完善→归零闭环",
+      "destructive": true,
+      "failure_mode": "运行失败需自动修复",
+      "cost": "H",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "可信执行治理",
+      "name": "可信执行治理",
+      "description": "L0-L4 动作分级+备份+审计+回滚",
+      "destructive": false,
+      "failure_mode": "回滚后需验证",
+      "cost": "M",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "工程化总控",
+      "name": "工程化总控",
+      "description": "12 阶段路由 + TodoWrite 自动推进",
+      "destructive": false,
+      "failure_mode": "阶段卡住",
+      "cost": "M",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "任务追踪",
+      "name": "任务追踪",
+      "description": "复杂任务结构化 trace 记录",
+      "destructive": false,
+      "failure_mode": "日志膨胀",
+      "cost": "L",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "编写计划",
+      "name": "编写计划",
+      "description": "TDD 微任务拆分",
+      "destructive": false,
+      "failure_mode": "拆分粒度不当",
+      "cost": "L",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "执行计划",
+      "name": "执行计划",
+      "description": "分批执行带检查点",
+      "destructive": false,
+      "failure_mode": "检查点遗漏",
+      "cost": "M",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "cicd流水线",
+      "name": "CICD流水线",
+      "description": "GitHub Actions 流水线设计",
+      "destructive": false,
+      "failure_mode": "环境差异",
+      "cost": "M",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "api接口设计",
+      "name": "API接口设计",
+      "description": "REST/OpenAPI 契约设计",
+      "destructive": false,
+      "failure_mode": "契约漂移",
+      "cost": "M",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "owasp安全",
+      "name": "OWASP安全",
+      "description": "OWASP Top10 安全审查",
+      "destructive": false,
+      "failure_mode": "误报",
+      "cost": "M",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "mcp服务构建",
+      "name": "MCP服务构建",
+      "description": "FastMCP/TS MCP Server 构建",
+      "destructive": false,
+      "failure_mode": "SDK 版本差异",
+      "cost": "H",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "系统化调试",
+      "name": "系统化调试",
+      "description": "系统性根因定位",
+      "destructive": false,
+      "failure_mode": "环境因素",
+      "cost": "M",
+      "type": "skill",
+      "status": "active"
+    },
+    {
+      "id": "测试驱动开发",
+      "name": "测试驱动开发",
+      "description": "红-绿-重构 TDD",
+      "destructive": false,
+      "failure_mode": "测试脆弱",
+      "cost": "M",
+      "type": "skill",
+      "status": "active"
+    }
+  ]
+}

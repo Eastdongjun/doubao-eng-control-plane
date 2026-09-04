@@ -14,3 +14,4 @@ _ref_skills/
 governance-demo/.governance/
 _projects/
 monitor/*.log
+!governance-demo/.governance/capability_registry.json

@@ -1,0 +1,88 @@
+{
+  "syntax_total": 6,
+  "syntax_pass": 6,
+  "run_total": 6,
+  "run_pass": 6,
+  "assert_total": 6,
+  "assert_pass": 6,
+  "details": [
+    {
+      "file": "calculator.py",
+      "dim": "syntax",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "file": "logclean.py",
+      "dim": "syntax",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "file": "logstats.py",
+      "dim": "syntax",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "file": "xian_guide.py",
+      "dim": "syntax",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "file": "task_trace.py",
+      "dim": "syntax",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "file": "backup_restore_drill.py",
+      "dim": "syntax",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "file": "calculator.py",
+      "dim": "run",
+      "pass": true,
+      "note": "输出包含期望"
+    },
+    {
+      "file": "calculator.py",
+      "dim": "run",
+      "pass": true,
+      "note": "输出包含期望"
+    },
+    {
+      "file": "calculator.py",
+      "dim": "run",
+      "pass": true,
+      "note": "输出包含期望"
+    },
+    {
+      "file": "logstats.py",
+      "dim": "run",
+      "pass": true,
+      "note": "输出包含期望"
+    },
+    {
+      "file": "xian_guide.py",
+      "dim": "run",
+      "pass": true,
+      "note": "输出包含期望"
+    },
+    {
+      "file": "logclean.py",
+      "dim": "run",
+      "pass": true,
+      "note": "输出包含期望"
+    }
+  ],
+  "summary": {
+    "语法可编译率": "6/6 (100.0%)",
+    "运行成功率": "6/6 (100.0%)",
+    "输出断言通过率": "6/6 (100.0%)",
+    "评估时间": "2026-09-04 11:04:42"
+  }
+}
