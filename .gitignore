@@ -13,3 +13,4 @@ _ref_skills/
 *.log
 governance-demo/.governance/
 _projects/
+monitor/*.log
