@@ -153,7 +153,7 @@ Inherits all from `adversarial-reviewer`. Plus:
 
 - **Extends:** [`engineering-team/adversarial-reviewer`](../对抗审查/SKILL.md) — abstract-role adversarial review (simpler, faster, no grounding needed)
 - **Related:** [`engineering-team/code-reviewer`](../代码审查/SKILL.md), [`engineering-team/senior-security`](../高级安全/SKILL.md)
-- **Sibling discipline:** [`productivity/andreessen`](../../../productivity/andreessen/skills/andreessen/SKILL.md) — the confidence-level / never-fabricate-a-citation pattern this skill adopts
+- **Sibling discipline:** 与「高级架构师」等角色技能一致的引用置信度纪律——每条归因标注置信度（high/moderate/low/unknown），绝不虚构引用来源。
 - **Sources & confidence per persona:** [`references/persona_principles.md`](references/persona_principles.md)
 - **Theory:** Edward de Bono, *Six Thinking Hats* (1985); Daniel Kahneman, *Thinking, Fast and Slow* (2011) — System-2 forcing via role switching
 

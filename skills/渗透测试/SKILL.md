@@ -302,5 +302,5 @@ Automated security checks on every PR: secret scanning (TruffleHog), dependency 
 |-------|-------------|
 | [senior-secops](../高级安全运营/SKILL.md) | Defensive security operations — monitoring, incident response, SIEM configuration |
 | [senior-security](../高级安全/SKILL.md) | Security policy and governance — frameworks, risk registers, compliance |
-| [dependency-auditor](engineering/skills/dependency-auditor/SKILL.md) | Deep supply chain security — SBOMs, license compliance, transitive risk |
+| dependency-auditor（见「依赖审计」技能） | Deep supply chain security — SBOMs, license compliance, transitive risk |
 | [code-reviewer](../代码审查/SKILL.md) | Code review practices — includes security review checklist |

@@ -75,9 +75,9 @@ curl http://localhost:3000/health
 
 ## Related Documentation
 
-- [Architecture Overview](docs/architecture/overview.md)
-- [Runbook](docs/runbook.md)
-- [ADRs](adr/)
+- `docs/architecture/overview.md`（架构总览，由你创建）
+- `docs/runbook.md`（运维手册，由你创建）
+- `adr/`（架构决策记录目录，由你创建）
 ```
 
 ### Architecture Docs
