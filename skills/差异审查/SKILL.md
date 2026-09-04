@@ -1,0 +1,225 @@
+---
+name: 差异审查
+description: 对代码变更（PR、提交、diff）做聚焦安全的差异审查：按代码库规模调整分析深度、用 git 历史补充上下文、计算爆炸半径、检查测试覆盖、生成完整 Markdown 报告，自动发现并阻止安全回归。
+  Performs security-focused differential review of code changes (PRs, commits, diffs).
+  Adapts analysis depth to codebase size, uses git history for context, calculates
+  blast radius, checks test coverage, and generates comprehensive markdown reports.
+  Automatically detects and prevents security regressions.
+cluster: security-compliance
+allowed-tools:
+  - Read
+  - Write
+  - Grep
+  - Glob
+  - Bash
+---
+
+# Differential Security Review
+
+> **Version**: 1.3.0 | **Last updated**: 2026-02-14
+
+Security-focused code review for PRs, commits, and diffs.
+
+## Core Principles
+
+1. **Risk-First**: Focus on auth, crypto, value transfer, external calls
+2. **Evidence-Based**: Every finding backed by git history, line numbers, attack scenarios
+3. **Adaptive**: Scale to codebase size (SMALL/MEDIUM/LARGE)
+4. **Honest**: Explicitly state coverage limits and confidence level
+5. **Output-Driven**: Always generate comprehensive markdown report file
+
+---
+
+## Rationalizations (Do Not Skip)
+
+| Rationalization | Why It's Wrong | Required Action |
+|-----------------|----------------|-----------------|
+| "Small PR, quick review" | Heartbleed was 2 lines | Classify by RISK, not size |
+| "I know this codebase" | Familiarity breeds blind spots | Build explicit baseline context |
+| "Git history takes too long" | History reveals regressions | Never skip Phase 1 |
+| "Blast radius is obvious" | You'll miss transitive callers | Calculate quantitatively |
+| "No tests = not my problem" | Missing tests = elevated risk rating | Flag in report, elevate severity |
+| "Just a refactor, no security impact" | Refactors break invariants | Analyze as HIGH until proven LOW |
+| "I'll explain verbally" | No artifact = findings lost | Always write report |
+
+---
+
+## Quick Reference
+
+### Codebase Size Strategy
+
+| Codebase Size | Strategy | Approach |
+|---------------|----------|----------|
+| SMALL (<20 files) | DEEP | Read all deps, full git blame |
+| MEDIUM (20-200) | FOCUSED | 1-hop deps, priority files |
+| LARGE (200+) | SURGICAL | Critical paths only |
+
+### Risk Level Triggers
+
+| Risk Level | Triggers |
+|------------|----------|
+| HIGH | Auth, crypto, external calls, value transfer, validation removal |
+| MEDIUM | Business logic, state changes, new public APIs |
+| LOW | Comments, tests, UI, logging |
+
+---
+
+## Workflow Overview
+
+```
+Pre-Analysis → Phase 0: Triage → Phase 1: Code Analysis → Phase 2: Test Coverage
+    ↓              ↓                    ↓                        ↓
+Phase 3: Blast Radius → Phase 4: Deep Context → Phase 5: Adversarial → Phase 6: Report
+```
+
+---
+
+## Decision Tree
+
+**Starting a review?**
+
+```
+├─ Need detailed phase-by-phase methodology?
+│  └─ Read: methodology.md
+│     (Pre-Analysis + Phases 0-4: triage, code analysis, test coverage, blast radius)
+│
+├─ Analyzing HIGH RISK change?
+│  └─ Read: adversarial.md
+│     (Phase 5: Attacker modeling, exploit scenarios, exploitability rating)
+│
+├─ Writing the final report?
+│  └─ Read: reporting.md
+│     (Phase 6: Report structure, templates, formatting guidelines)
+│
+├─ Looking for specific vulnerability patterns?
+│  └─ Read: patterns.md
+│     (Regressions, reentrancy, access control, overflow, etc.)
+│
+└─ Quick triage only?
+   └─ Use Quick Reference above, skip detailed docs
+```
+
+---
+
+## Quality Checklist
+
+Before delivering:
+
+- [ ] All changed files analyzed
+- [ ] Git blame on removed security code
+- [ ] Blast radius calculated for HIGH risk
+- [ ] Attack scenarios are concrete (not generic)
+- [ ] Findings reference specific line numbers + commits
+- [ ] Report file generated
+- [ ] User notified with summary
+
+---
+
+## Integration
+
+**audit-context-building skill:**
+- Pre-Analysis: Build baseline context
+- Phase 4: Deep context on HIGH RISK changes
+
+**issue-writer skill:**
+- Transform findings into formal audit reports
+- Command: `issue-writer --input DIFFERENTIAL_REVIEW_REPORT.md --format audit-report`
+
+---
+
+## Example Usage
+
+### Quick Triage (Small PR)
+```
+Input: 5 file PR, 2 HIGH RISK files
+Strategy: Use Quick Reference
+1. Classify risk level per file (2 HIGH, 3 LOW)
+2. Focus on 2 HIGH files only
+3. Git blame removed code
+4. Generate minimal report
+Time: ~30 minutes
+```
+
+### Standard Review (Medium Codebase)
+```
+Input: 80 files, 12 HIGH RISK changes
+Strategy: FOCUSED (see methodology.md)
+1. Full workflow on HIGH RISK files
+2. Surface scan on MEDIUM
+3. Skip LOW risk files
+4. Complete report with all sections
+Time: ~3-4 hours
+```
+
+### Deep Audit (Large, Critical Change)
+```
+Input: 450 files, auth system rewrite
+Strategy: SURGICAL + audit-context-building
+1. Baseline context with audit-context-building
+2. Deep analysis on auth changes only
+3. Blast radius analysis
+4. Adversarial modeling
+5. Comprehensive report
+Time: ~6-8 hours
+```
+
+---
+
+## When NOT to Use This Skill
+
+- **Greenfield code** (no baseline to compare)
+- **Documentation-only changes** (no security impact)
+- **Formatting/linting** (cosmetic changes)
+- **User explicitly requests quick summary only** (they accept risk)
+
+For these cases, use standard code review instead.
+
+---
+
+## Red Flags (Stop and Investigate)
+
+**Immediate escalation triggers:**
+- Removed code from "security", "CVE", or "fix" commits
+- Access control modifiers removed (onlyOwner, internal → external)
+- Validation removed without replacement
+- External calls added without checks
+- High blast radius (50+ callers) + HIGH risk change
+
+These patterns require adversarial analysis even in quick triage.
+
+---
+
+## Tips for Best Results
+
+**Do:**
+- Start with git blame for removed code
+- Calculate blast radius early to prioritize
+- Generate concrete attack scenarios
+- Reference specific line numbers and commits
+- Be honest about coverage limitations
+- Always generate the output file
+
+**Don't:**
+- Skip git history analysis
+- Make generic findings without evidence
+- Claim full analysis when time-limited
+- Forget to check test coverage
+- Miss high blast radius changes
+- Output report only to chat (file required)
+
+---
+
+## Anti-Patterns
+
+- **Rubber-stamp review** — approving small PRs without analysis because "it's just a few lines"; Heartbleed was a 2-line change
+- **Size-based triage** — classifying risk by line count instead of by what the code touches; a 3-line auth change is higher risk than a 500-line UI refactoring
+- **Generic findings** — reporting "possible XSS" without specific line numbers, attack vectors, and exploit scenarios; unactionable findings get ignored
+- **Skipping git history** — reviewing only the current diff without checking what was removed or modified from security-related commits; regressions hide in removals
+- **Verbal-only findings** — discussing issues in chat without generating the report file; findings are lost, not tracked, and cannot be audited
+- **Happy-path-only review** — checking that new code works correctly without analyzing error paths, edge cases, and adversarial inputs
+
+## For Claude Code
+
+When performing differential reviews: always start with git blame on removed or modified security-relevant code before analyzing additions. Calculate blast radius quantitatively (count callers, transitive dependencies) for HIGH risk changes. Classify risk by what the code touches (auth, crypto, validation, external calls), never by PR size. Generate concrete attack scenarios with specific inputs and expected exploitable outputs — never generic "possible vulnerability" findings. Always produce a markdown report file with line-number references, severity ratings, and recommended fixes. Reference `安全设计/SKILL.md` for OWASP patterns, `安全测试/SKILL.md` for automated scanning integration, `owasp安全/SKILL.md` for vulnerability classification.
+
+*Internal references*: `安全设计/SKILL.md`, `安全测试/SKILL.md`, `owasp安全/SKILL.md`, `质量门禁/SKILL.md`

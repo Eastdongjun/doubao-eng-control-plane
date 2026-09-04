@@ -1,0 +1,259 @@
+---
+name: 架构绘图
+cluster: documentation-diagrams
+description: 用 Mermaid 与 C4 模型把架构图画成代码：系统上下文、容器、组件、时序、ERD、状态图。创建架构图、记录流程或可视化系统设计时使用。
+---
+
+# Diagrams & Visualization
+
+> **Version**: 1.3.0 | **Last updated**: 2026-02-14
+
+## Purpose
+
+Architectural diagrams as code. Mermaid as primary format (renderable in GitHub, IDEs, docs), PlantUML as fallback for complex cases. C4 model as the reference framework.
+
+---
+
+## C4 Model
+
+Four zoom levels, from highest to lowest. Not all are needed — use the levels that communicate the necessary concept.
+
+### Level 1 — System Context
+
+Who uses the system and what it interacts with. External actors (users, third-party systems), the system as a black box, main relationships. **When to use**: for non-technical stakeholders, high-level documentation, onboarding.
+
+### Level 2 — Container
+
+The "containers" (not Docker — applications, databases, message brokers) composing the system. Frontend, backend, database, message queue. **When to use**: for the technical team, infrastructure decisions, architecture reviews.
+
+```mermaid
+graph TB
+    subgraph "Invoice Platform"
+        WebApp["Web App<br/>React + TypeScript"]
+        API["API Service<br/>Node.js + Fastify"]
+        Worker["Event Worker<br/>Cloud Run Job"]
+        DB[("Firestore")]
+        PubSub["Pub/Sub"]
+    end
+    WebApp -->|"REST/JSON"| API
+    API -->|"Read/Write"| DB
+    API -->|"Publish events"| PubSub
+    PubSub -->|"Subscribe"| Worker
+    Worker -->|"Read/Write"| DB
+```
+
+### Level 3 — Component
+
+Internal components of a container. Modules, services, layers. Useful for complex services.
+
+### Level 4 — Code
+
+Classes and interfaces. Rarely useful as a static diagram — code is the best documentation at this level.
+
+---
+
+## Diagram Types
+
+### Sequence Diagram
+
+For interaction flows between components. Use for: API flows, event-driven flows, saga/choreography, authentication flows.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant Auth as Firebase Auth
+    participant DB as Firestore
+    Client->>Auth: Sign in
+    Auth-->>Client: JWT Token
+    Client->>API: POST /invoices (+ JWT)
+    API->>Auth: Verify token
+    API->>DB: Save invoice
+    API-->>Client: 201 Created
+```
+
+### Entity Relationship Diagram
+
+For data models. Firestore is schema-less but documents have an implicit structure that must be documented.
+
+```mermaid
+erDiagram
+    TENANT ||--o{ USER : has
+    TENANT ||--o{ INVOICE : owns
+    USER ||--o{ INVOICE : creates
+    INVOICE ||--|{ LINE_ITEM : contains
+    INVOICE }o--|| INVOICE_STATUS : has
+
+    TENANT {
+        uuid id PK
+        string name
+        string plan
+        timestamp created_at
+    }
+    USER {
+        uuid id PK
+        uuid tenant_id FK
+        string email
+        string role
+    }
+    INVOICE {
+        uuid id PK
+        uuid tenant_id FK
+        uuid created_by FK
+        string status
+        decimal total_amount
+        string currency
+        timestamp created_at
+    }
+    LINE_ITEM {
+        uuid id PK
+        uuid invoice_id FK
+        string description
+        decimal amount
+        int quantity
+    }
+```
+
+### Deployment Diagram
+
+For infrastructure and deployment topology:
+
+```mermaid
+graph TB
+    subgraph "GCP — europe-west1"
+        subgraph "Cloud Run"
+            API["API Service<br/>2 instances min"]
+            Worker["Event Worker<br/>0 instances min"]
+        end
+        subgraph "Data"
+            FS[("Firestore<br/>Native mode")]
+            Redis["Memorystore<br/>Redis 7"]
+        end
+        subgraph "Messaging"
+            PS["Pub/Sub"]
+            DLQ["Dead Letter Queue"]
+        end
+        subgraph "Security"
+            SM["Secret Manager"]
+            IAM["Cloud IAM"]
+        end
+    end
+    subgraph "External"
+        CDN["Cloud CDN"]
+        LB["Cloud Load Balancer"]
+        Users["Users"]
+    end
+    Users --> CDN --> LB --> API
+    API --> FS
+    API --> Redis
+    API --> PS
+    PS --> Worker
+    PS --> DLQ
+    Worker --> FS
+    API --> SM
+```
+
+### State Diagram
+
+For state machines (invoice status, order status, entity lifecycle).
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Sent: send()
+    Sent --> Paid: markPaid()
+    Sent --> Overdue: pastDueDate
+    Overdue --> Paid: markPaid()
+    Sent --> Void: void()
+    Draft --> Void: void()
+    Paid --> [*]
+    Void --> [*]
+```
+
+### Data Flow Diagram
+
+For privacy reviews and compliance (see `合规与隐私/SKILL.md`). Shows how data moves through the system with trust boundaries:
+
+```mermaid
+graph LR
+    subgraph "Trust Boundary: Client"
+        Browser["Browser"]
+    end
+    subgraph "Trust Boundary: API"
+        API["API Service"]
+        Auth["Auth Middleware"]
+    end
+    subgraph "Trust Boundary: Data"
+        DB[("PostgreSQL")]
+        Cache["Redis"]
+    end
+    subgraph "Trust Boundary: External"
+        Stripe["Stripe API"]
+        Email["SendGrid"]
+    end
+    Browser -->|"HTTPS + JWT"| Auth
+    Auth -->|"Validated request"| API
+    API -->|"TLS + RLS"| DB
+    API -->|"TLS"| Cache
+    API -->|"TLS + API Key"| Stripe
+    API -->|"TLS + API Key"| Email
+```
+
+Use data flow diagrams for: GDPR data mapping, threat modeling (STRIDE), and security reviews.
+
+### PlantUML Example
+
+For diagrams too complex for Mermaid (large sequence diagrams, complex class diagrams):
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Business User", "Creates and manages invoices")
+System_Boundary(platform, "Invoice Platform") {
+  Container(spa, "Web App", "React", "Invoice management UI")
+  Container(api, "API Service", "Node.js/Fastify", "Business logic and API")
+  ContainerDb(db, "Database", "PostgreSQL", "Stores invoices and users")
+  Container(worker, "Event Worker", "Cloud Run Job", "Async processing")
+}
+System_Ext(stripe, "Stripe", "Payment processing")
+
+Rel(user, spa, "Uses", "HTTPS")
+Rel(spa, api, "Calls", "REST/JSON")
+Rel(api, db, "Reads/Writes", "TLS")
+Rel(api, worker, "Events", "Pub/Sub")
+Rel(api, stripe, "Charges", "HTTPS")
+@enduml
+```
+
+Use PlantUML when: C4 diagrams with PlantUML-C4 library offer better layout than Mermaid C4, or when diagrams need features Mermaid doesn't support (notes, grouping, advanced styling).
+
+---
+
+## Principles
+
+**Diagram as code**: Mermaid or PlantUML in the repo, versioned with git. Never PNG/JPG images as source (not modifiable, not diffable).
+
+**One diagram, one concept**: if a diagram tries to show everything, it shows nothing. Each diagram answers a specific question.
+
+**Update or delete**: an obsolete diagram is worse than no diagram. If the system changes, the diagram changes in the same PR.
+
+---
+
+## Anti-Patterns
+
+- **Architecture astronaut diagrams** — showing every component and connection at once; use C4 levels to progressively disclose detail
+- **Stale diagrams** — documentation that hasn't been updated since the initial design; diagrams must be generated from code or updated with every architectural change
+- **Tool-locked diagrams** — using proprietary formats (Visio, Lucidchart) that require licenses to edit; use Mermaid or PlantUML for version-controlled, reviewable diagrams
+- **Missing legend or context** — diagrams without labels, arrows without meaning, boxes without technology annotations; every element must be self-explanatory
+- **Mixing abstraction levels** — showing infrastructure details alongside business processes in one diagram; separate concerns into appropriate C4 levels
+
+---
+
+## For Claude Code
+
+When generating diagrams: Mermaid as default, appropriate C4 level for context (Context for stakeholders, Container for technical team), one diagram per concept. Generate sequence diagrams for every non-trivial flow (> 3 actors). Generate state diagrams for every entity with a state machine.
+
+---
+
+*Internal references*: `技术文档/SKILL.md`, `架构沟通/SKILL.md`, `数据建模/SKILL.md`

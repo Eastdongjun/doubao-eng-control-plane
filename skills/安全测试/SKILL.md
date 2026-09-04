@@ -1,0 +1,307 @@
+---
+name: 安全测试
+cluster: testing-quality
+description: CI 中的自动化安全测试：SAST、DAST、依赖扫描、授权测试、密钥检测。向流水线添加安全扫描、编写租户隔离测试或配置漏洞扫描时使用。
+---
+
+# Security Testing
+
+> **Version**: 1.3.0 | **Last updated**: 2026-02-13
+
+## Purpose
+
+Automated security testing integrated into the development cycle. SAST, DAST, dependency scanning, authorization testing, secret detection, and container/IaC scanning.
+
+---
+
+## SAST (Static Application Security Testing)
+
+Static analysis of source code for known vulnerabilities. Run in CI on every PR.
+
+**TypeScript**: ESLint with security plugin (`eslint-plugin-security`), Semgrep with TypeScript/Node.js rules. **Swift**: SwiftLint with custom security rules.
+
+Rules: block PR on CRITICAL/HIGH findings. WARNING as a comment in PR review.
+
+---
+
+## DAST (Dynamic Application Security Testing)
+
+Testing the running application for runtime vulnerabilities. OWASP ZAP as automated scanner in staging.
+
+Workflow: deploy to staging -> run ZAP baseline scan -> report -> fix before production. Cadence: on every release candidate. Full active scan weekly.
+
+### ZAP Baseline Scan Configuration
+
+```yaml
+# .github/workflows/dast.yml
+- name: OWASP ZAP Baseline Scan
+  uses: zaproxy/action-baseline@v0.10
+  with:
+    target: 'https://staging.example.com'
+    rules_file_name: 'zap-rules.tsv'
+    cmd_options: '-a -j'  # AJAX spider, JSON report
+
+# zap-rules.tsv — customize alert thresholds
+# Rule ID  Action  Description
+10010      WARN    Cookie No HttpOnly Flag
+10011      WARN    Cookie Without Secure Flag
+10015      FAIL    Incomplete or No Cache-control Header
+10020      FAIL    X-Frame-Options Header Not Set
+10021      FAIL    X-Content-Type-Options Header Missing
+10038      FAIL    Content Security Policy Header Not Set
+40012      FAIL    Cross Site Scripting (Reflected)
+40014      FAIL    Cross Site Scripting (Persistent)
+90011      FAIL    Charset Mismatch
+```
+
+---
+
+## Dependency Scanning
+
+`npm audit` in CI (block on critical). Renovate/Dependabot for automatic updates. Socket.dev or Snyk for advanced supply chain analysis (typosquatting, malicious code injection). For Swift: `swift package audit` (if available) or Snyk.
+
+---
+
+## Container Image Scanning
+
+Scan container images for known vulnerabilities before pushing to registry.
+
+**Tools**: Trivy or Grype in CI pipeline.
+
+**Policy**: block on CRITICAL vulnerabilities. HIGH vulnerabilities require exception or fix within 1 sprint.
+
+```yaml
+# In GitHub Actions
+- name: Scan container image
+  uses: aquasecurity/trivy-action@master
+  with:
+    image-ref: '${{ env.IMAGE }}'
+    severity: 'CRITICAL,HIGH'
+    exit-code: '1'
+```
+
+---
+
+## IaC Scanning
+
+Scan Terraform/Kubernetes configuration for security misconfigurations.
+
+**Tools**: Checkov, tfsec, or Trivy (supports IaC scanning).
+
+**Checks**: overly permissive IAM roles, public storage buckets, unencrypted databases, missing network policies, hardcoded credentials in IaC.
+
+---
+
+## Authorization Testing
+
+Automated tests verifying tenant isolation and role-based access. These are the most important security tests in a multi-tenant application.
+
+```typescript
+describe('Tenant isolation', () => {
+  it('prevents access to another tenant resources', async () => {
+    const res = await request(app)
+      .get('/api/v1/tenants/t_other/invoices')
+      .set('Authorization', `Bearer ${tokenForTenantA}`);
+    expect(res.status).toBe(403);
+  });
+  it('prevents viewer from creating invoices', async () => {
+    const res = await request(app)
+      .post('/api/v1/tenants/t_test/invoices')
+      .set('Authorization', `Bearer ${viewerToken}`)
+      .send(validInvoiceData);
+    expect(res.status).toBe(403);
+  });
+});
+```
+
+Generate a test for every combination (role × action × resource) — tedious but essential. Use matrix testing or parameterized tests.
+
+### API Security Testing
+
+Test for common API vulnerabilities beyond tenant isolation:
+
+```typescript
+describe('API Security', () => {
+  it('prevents IDOR — cannot access invoice by guessing ID', async () => {
+    const otherInvoice = await createInvoiceForTenant('t_other');
+    const res = await request(app)
+      .get(`/api/v1/tenants/t_test/invoices/${otherInvoice.id}`)
+      .set('Authorization', `Bearer ${tokenForTenantA}`);
+    expect(res.status).toBe(404); // Not 403 — don't reveal existence
+  });
+
+  it('prevents mass assignment — ignores unpermitted fields', async () => {
+    const res = await request(app)
+      .post('/api/v1/tenants/t_test/invoices')
+      .set('Authorization', `Bearer ${editorToken}`)
+      .send({ ...validInvoice, role: 'admin', tenantId: 't_other' }); // attempt to escalate
+    expect(res.body.role).toBeUndefined();
+    expect(res.body.tenantId).toBe('t_test'); // Server-enforced, not from request
+  });
+
+  it('handles fuzzing — rejects malformed input gracefully', async () => {
+    const fuzzInputs = [null, '', 0, [], {}, '<script>alert(1)</script>', 'a'.repeat(100000)];
+    for (const input of fuzzInputs) {
+      const res = await request(app)
+        .post('/api/v1/tenants/t_test/invoices')
+        .set('Authorization', `Bearer ${editorToken}`)
+        .send({ amount: input });
+      expect(res.status).toBeGreaterThanOrEqual(400);
+      expect(res.status).toBeLessThan(500); // Client error, not server crash
+    }
+  });
+});
+```
+
+### Authenticated DAST
+
+Run DAST scans with authentication to test beyond the login page:
+
+```yaml
+# ZAP with authentication context
+- name: OWASP ZAP Authenticated Scan
+  uses: zaproxy/action-full-scan@v0.10
+  with:
+    target: 'https://staging.example.com'
+    cmd_options: '-z "-config auth.method=2 -config auth.bearer=${{ secrets.STAGING_TOKEN }}"'
+```
+
+### False Positive Triage
+
+Security scan false positives erode trust. Process:
+
+1. Review finding — is it a real vulnerability or a false positive?
+2. If false positive: add inline suppression with justification comment
+3. Track suppression count — rising count may indicate misconfigured rules
+4. Review suppressions quarterly — conditions may have changed
+
+---
+
+## Secret Detection
+
+Pre-commit hook (git-secrets, gitleaks) blocking commits containing secret patterns (AWS keys, GCP service account JSON, plaintext passwords). CI scan as backup.
+
+**Patterns to detect**: AWS access keys (`AKIA...`), GCP service account JSON (`"type": "service_account"`), generic passwords (`password\s*=`), private keys (`-----BEGIN.*PRIVATE KEY-----`), API tokens.
+
+---
+
+## Constant-Time Testing
+
+Timing attacks exploit execution time variations to extract secrets from cryptographic implementations. Any code handling private keys, passwords, or sensitive cryptographic material requires constant-time analysis.
+
+### Common Timing Violation Patterns
+
+Four patterns cause most timing vulnerabilities:
+
+| Pattern | Example | Severity |
+|---------|---------|----------|
+| Secret-dependent branch | `if (secret == 1) { ... }` | Critical |
+| Secret-dependent array access | `lookupTable[secretIndex]` | High |
+| Variable-time division | `result = x / secret` | Medium |
+| Variable-time shift | `result = a << secret` | Medium |
+
+### Testing Approach
+
+**Statistical testing (dudect)**: measures execution time for two input classes (fixed vs random) and uses Welch's t-test to detect significant differences. Simple setup, practical for CI.
+
+**Dynamic tracing (Timecop/Valgrind)**: marks sensitive memory regions and traces execution to detect timing-dependent operations. Pinpoints exact line of leak.
+
+**Recommended workflow**:
+1. Start with dudect — quick statistical check (5-10 minutes)
+2. If leaks found — use Timecop to pinpoint root cause
+3. For high-assurance code — apply formal verification (ct-verif)
+4. Integrate dudect into CI for continuous monitoring
+
+### When to Apply
+
+- Auditing cryptographic implementations (primitives, protocols)
+- Code handling private keys, passwords, or tokens
+- Implementing crypto algorithms or constant-time comparisons
+- Reviewing PRs that touch cryptographic code
+
+For non-cryptographic code that does not process secrets, constant-time analysis is not needed.
+
+---
+
+## Semgrep Advanced Usage
+
+When running Semgrep at scale on multi-language codebases:
+
+**Pro vs OSS**: Semgrep Pro enables cross-file taint tracking (250%+ more true positives). Check availability: `semgrep --pro --validate --config p/default`. Always prefer Pro when available.
+
+**Parallel scanning**: for multi-language projects, run per-language scans in parallel with language-scoped rulesets (`--include="*.py"` for Python rules). Always use `--metrics=off` to prevent telemetry.
+
+**Required rulesets**: beyond official registry rules (`p/security-audit`, `p/secrets`), include third-party rules from Trail of Bits (`trailofbits/semgrep-rules`) which catch vulnerabilities not in the official registry.
+
+**Triage workflow**: raw findings contain false positives. Always triage before reporting — review findings with code context, classify as true/false positive, report only confirmed findings.
+
+---
+
+## SARIF Processing
+
+Security scanning tools output SARIF (Static Analysis Results Interchange Format, OASIS 2.1.0). Key processing patterns:
+
+**Quick analysis with jq**: `jq '[.runs[].results[]] | length' results.sarif` (count findings), `jq '.runs[].results[] | select(.level == "error")' results.sarif` (filter by severity).
+
+**Aggregation**: when combining results from multiple tools, merge SARIF files preserving tool metadata. Deduplicate using `partialFingerprints` or `fingerprints` fields — path-based matching fails across environments.
+
+**CI/CD integration**: upload SARIF to GitHub Code Scanning (`github/codeql-action/upload-sarif@v3`). Gate on new findings: compare current SARIF against baseline to detect regressions.
+
+**Regression detection**: store baseline SARIF per branch. On each PR, diff current vs baseline — new findings block merge, resolved findings are noted. Use fingerprints (not paths) for stable comparison.
+
+---
+
+## Severity Policy & Gating
+
+### Default Severity Policy
+
+| Severity | Action | Timeline |
+|----------|--------|----------|
+| Critical | **BLOCK** — cannot merge/deploy | Fix immediately |
+| High | **BLOCK** unless exception approved | Fix within 1 sprint |
+| Medium | **WARN** + backlog ticket created | Fix within 2 sprints |
+| Low | Informational | Address opportunistically |
+
+### Exception Process
+
+When a High finding cannot be immediately resolved, document an exception:
+
+```markdown
+## Security Exception
+
+**Finding**: [CVE/CWE ID] — [brief description]
+**Component**: [package/file affected]
+**Justification**: [why it cannot be fixed now]
+**Compensating controls**: [what mitigates the risk]
+  - e.g., "Not reachable from user input", "WAF rule blocks exploit path"
+**Expiry date**: [YYYY-MM-DD — max 90 days]
+**Owner**: [person responsible for resolution]
+**Ticket**: [link to tracking ticket]
+```
+
+Exceptions are reviewed monthly. Expired exceptions become blockers.
+
+---
+
+## Scanning Coverage Summary
+
+| Scan Type | Trigger | Tool | Gate |
+|-----------|---------|------|------|
+| Secret detection | Pre-commit + CI | gitleaks | PR gate |
+| SAST | Every PR | Semgrep, ESLint security | PR gate |
+| Dependency scan | Every PR + weekly | npm audit, Snyk | PR gate |
+| Container scan | On image build | Trivy | Deploy gate |
+| IaC scan | On infra changes | Checkov/tfsec | PR gate |
+| DAST | Release candidate | OWASP ZAP | Release gate |
+| Authorization tests | Every PR | Vitest/XCTest | PR gate |
+| Constant-time test | On crypto changes | dudect/Timecop | PR gate (crypto) |
+
+---
+
+## For Claude Code
+
+When generating security tests: tenant isolation test for every multi-tenant endpoint, role-based access test for every protected endpoint, include ESLint security plugin in configuration. Don't forget negative tests (access denied = correct behavior). Include container and IaC scanning in CI pipelines. When a security finding is reported, suggest fix with severity and timeline.
+
+---
+
+*Internal references*: `测试策略/SKILL.md`, `安全设计/SKILL.md`, `认证与授权/SKILL.md`, `质量门禁/SKILL.md`
